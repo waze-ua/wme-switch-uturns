@@ -1,15 +1,16 @@
 // ==UserScript==
-// @name         WME Add Uturns from node
+// @name         WME Switch Uturns
 // @version      0.13
-// @description  Add uturns from node
+// @description  Switches uTurns for selected node
 // @author       ixxvivxxi, uranik, turbopirate
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
-// @include      https://editor-beta.waze.com/editor/*
-// @include      https://editor-beta.waze.com/*/editor/*
+// @include      https://editor-beta.waze.com/editor*
+// @include      https://editor-beta.waze.com/*/editor*
 // @grant        none
-// @namespace    https://greasyfork.org/ru/scripts/16950-wme-add-uturns-from-node2
+// @namespace    https://github.com/waze-ua/wme-switch-uturns/raw/master/wme-switch-uturns.user.js
 // ==/UserScript==
+
 function Uturns_bootstrap()
 {
     var bGreasemonkeyServiceDefined = false;
@@ -71,7 +72,7 @@ function getSegmentsCount(node) {
     return node.attributes.segIDs.length;
 }
 
-function setUturn(s) {
+function switchUturn(s) {
     var wazeActionSetTurn= require("Waze/Model/Graph/Actions/SetTurn");
     var node = Waze.selectionManager.selectedItems[0].model;
     var segIDs = node.attributes.segIDs;
@@ -146,12 +147,12 @@ function startUturns() {
         }
     }
     $('#sidebar').on('click', '#allowUturns', function(event) {
-        setUturn(1);
+        switchUturn(1);
         updateButtons();
     });
 
     $('#sidebar').on('click', '#disallowUturns', function(event) {
-        setUturn(0);
+        switchUturn(0);
         updateButtons();
     });
 }
