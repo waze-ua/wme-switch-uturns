@@ -1,12 +1,9 @@
 // ==UserScript==
 // @name         WME Switch Uturns
-// @version      0.13
+// @version      0.13.1
 // @description  Switches Uturns for selected node. Forked and improved "WME Add Uturn from node" script.
 // @author       ixxvivxxi, uranik, turbopirate
-// @include      https://www.waze.com/editor*
-// @include      https://www.waze.com/*/editor*
-// @include      https://editor-beta.waze.com/editor*
-// @include      https://editor-beta.waze.com/*/editor*
+// @include      /^https:\/\/(www|beta)\.waze\.com(\/\w{2,3}|\/\w{2,3}-\w{2,3}|\/\w{2,3}-\w{2,3}-\w{2,3})?\/editor\b/
 // @grant        none
 // @namespace    https://github.com/waze-ua/wme-switch-uturns/raw/master/wme-switch-uturns.user.js
 // ==/UserScript==
