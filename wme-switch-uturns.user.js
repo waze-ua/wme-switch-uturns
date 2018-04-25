@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         WME Switch Uturns
-// @version      2018.02.02.001
+// @version      2018.04.26.001
 // @description  Switches Uturns for selected node. Forked and improved "WME Add Uturn from node" script.
 // @author       ixxvivxxi, uranik, turbopirate
 // @include      /^https:\/\/(www|beta)\.waze\.com(\/\w{2,3}|\/\w{2,3}-\w{2,3}|\/\w{2,3}-\w{2,3}-\w{2,3})?\/editor\b/
@@ -37,9 +37,9 @@ function Uturns_bootstrap()
 
 function getUturnsCount(node) {
     var numUTurns=0;
-    for(var currentNode in Waze.model.nodes.objects)
+    for(var currentNode in W.model.nodes.objects)
     {
-        var node2=Waze.model.nodes.get(currentNode);
+        var node2=W.model.nodes.get(currentNode);
         if(node2.attributes.id==node.attributes.id)
         {
             if(node2===undefined)continue;
@@ -47,7 +47,7 @@ function getUturnsCount(node) {
             for(var j=0;j<node2.attributes.segIDs.length;j++)
             {
                 var segID=node2.attributes.segIDs[j];
-                var segment2=Waze.model.segments.get(segID);
+                var segment2=W.model.segments.get(segID);
                 if(segment2===undefined)continue;
                 var attributes=segment2.attributes;
                 if(attributes.fwdDirection===true&&attributes.revDirection===true)
@@ -71,13 +71,13 @@ function getSegmentsCount(node) {
 
 function switchUturn(s) {
     var wazeActionSetTurn= require("Waze/Model/Graph/Actions/SetTurn");
-    var node = Waze.selectionManager.selectedItems[0].model;
+    var node = W.selectionManager.getSelectedFeatures()[0].model;
     var segIDs = node.attributes.segIDs;
 
     for (var i = 0; i < segIDs.length; i++) {
-        var segment = Waze.model.segments.objects[segIDs[i]];
-        var turn = Waze.model.getTurnGraph().getTurnThroughNode(node, segment, segment);
-        Waze.model.actionManager.add(new wazeActionSetTurn(Waze.model.getTurnGraph(), turn.withTurnData(turn.getTurnData().withState(s))));
+        var segment = W.model.segments.objects[segIDs[i]];
+        var turn = W.model.getTurnGraph().getTurnThroughNode(node, segment, segment);
+        W.model.actionManager.add(new wazeActionSetTurn(W.model.getTurnGraph(), turn.withTurnData(turn.getTurnData().withState(s))));
     }
 }
 
@@ -105,8 +105,8 @@ function getI18N(id, loc) {
 }
 
 function updateButtons() {
-    var uturnCount = getUturnsCount(Waze.selectionManager.selectedItems[0].model);
-    var segsCount = getSegmentsCount(Waze.selectionManager.selectedItems[0].model);
+    var uturnCount = getUturnsCount(W.selectionManager.getSelectedFeatures()[0].model);
+    var segsCount = getSegmentsCount(W.selectionManager.getSelectedFeatures()[0].model);
 
     var disallowBtn = $('#edit-panel .side-panel-section #disallowUturns');
     var allowBtn = $('#edit-panel .side-panel-section #allowUturns');
@@ -133,11 +133,11 @@ function updateButtons() {
 }
 
 function startUturns() {
-    Waze.selectionManager.events.register("selectionchanged", null, showButton);
+    W.selectionManager.events.register("selectionchanged", null, showButton);
     function showButton() {
         var loc = I18n.locale;
-        if(Waze.selectionManager.selectedItems.length === 0 || Waze.selectionManager.selectedItems.length > 1) return;
-        if(Waze.selectionManager.selectedItems[0].model.type == "node") {
+        if(W.selectionManager.getSelectedFeatures().length === 0 || W.selectionManager.getSelectedFeatures().length > 1) return;
+        if(W.selectionManager.getSelectedFeatures()[0].model.type == "node") {
             $('#edit-panel .side-panel-section:first-child').append('<button id="disallowUturns" class="btn btn-default">' + getI18N("disallow_uturns", loc) + '</button>');
             $('#edit-panel .side-panel-section:first-child').append('<button id="allowUturns" class="btn btn-default">' + getI18N("allow_uturns", loc) + '</button>');
             updateButtons();
