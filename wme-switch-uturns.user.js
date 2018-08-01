@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         WME Switch Uturns
-// @version      2018.04.26.001
+// @version      2018.08.01.001
 // @description  Switches Uturns for selected node. Forked and improved "WME Add Uturn from node" script.
 // @author       ixxvivxxi, uranik, turbopirate
 // @include      /^https:\/\/(www|beta)\.waze\.com(\/\w{2,3}|\/\w{2,3}-\w{2,3}|\/\w{2,3}-\w{2,3}-\w{2,3})?\/editor\b/
@@ -39,7 +39,7 @@ function getUturnsCount(node) {
     var numUTurns=0;
     for(var currentNode in W.model.nodes.objects)
     {
-        var node2=W.model.nodes.get(currentNode);
+        var node2=W.model.nodes.getObjectById(currentNode);
         if(node2.attributes.id==node.attributes.id)
         {
             if(node2===undefined)continue;
@@ -47,7 +47,7 @@ function getUturnsCount(node) {
             for(var j=0;j<node2.attributes.segIDs.length;j++)
             {
                 var segID=node2.attributes.segIDs[j];
-                var segment2=W.model.segments.get(segID);
+                var segment2=W.model.segments.getObjectById(segID);
                 if(segment2===undefined)continue;
                 var attributes=segment2.attributes;
                 if(attributes.fwdDirection===true&&attributes.revDirection===true)
