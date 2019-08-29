@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Switch Uturns
-// @version      1.0.0
-// @description  Switches Uturns for selected node. Forked and improved "WME Add Uturn from node" script.
+// @version      1.0.1
+// @description  Switches U-turns for selected node or segment. Forked and improved "WME Add Uturn from node" script.
 // @author       ixxvivxxi, uranik, turbopirate, AntonShevchuk
 // @include      /^https:\/\/(www|beta)\.waze\.com(\/\w{2,3}|\/\w{2,3}-\w{2,3}|\/\w{2,3}-\w{2,3}-\w{2,3})?\/editor\b/
 // @grant        none
@@ -23,6 +23,7 @@
   const TRANSLATION = {
     'en': {
       title: 'Switch U-Turns',
+      switch_uturn: 'Switch U-turn at point',
       allowed: 'Allowed',
       disallowed: 'Disallowed',
       allow_uturns: 'Allow all U-turns',
@@ -30,6 +31,7 @@
     },
     'uk': {
       title: 'Керування розворотами',
+      switch_uturn: 'Змінити розворот у точці',
       allowed: 'Дозволено',
       disallowed: 'Заборонено',
       allow_uturns: 'Дозволити усі розвороти',
@@ -37,6 +39,7 @@
     },
     'ru': {
       title: 'Управление разворотами',
+      switch_uturn: 'Изменить разворот в точке',
       allowed: 'Разрешено',
       disallowed: 'Запрещено',
       allow_uturns: 'Разрешить все развороты',
@@ -49,7 +52,7 @@
 
   $(document)
     .on('ready.apihelper', ready)
-    .on('node.apihelper', '#edit-panel', createUI)
+    .on('node.apihelper', '#edit-panel', createNodeUI)
   ;
 
   let label, div, text, allow, disallow;
@@ -80,21 +83,29 @@
     disallow.innerHTML = I18n.t(NAME).disallow_uturns;
     disallow.onclick = () => switchNodeUturn(0);
     div.append(disallow);
+
+    // Hotkeys for node manipulation
+    new WazeWrap.Interface.Shortcut(NAME + '-node-allow', I18n.t(NAME).allow_uturns, NAME, I18n.t(NAME).title, 'A+A', () => switchNodeUturn(1), null).add();
+    new WazeWrap.Interface.Shortcut(NAME + '-node-disallow', I18n.t(NAME).disallow_uturns, NAME, I18n.t(NAME).title, 'A+S', () => switchNodeUturn(0), null).add();
+    // Hotkeys for segment manipulation
+    new WazeWrap.Interface.Shortcut(NAME + '-segment-a', I18n.t(NAME).switch_uturn + ' A', NAME, I18n.t(NAME).title, 'A+Q', () => switchSegmentUturn('A'), null).add();
+    new WazeWrap.Interface.Shortcut(NAME + '-segment-b', I18n.t(NAME).switch_uturn + ' B', NAME, I18n.t(NAME).title, 'A+W', () => switchSegmentUturn('B'), null).add();
   }
 
-  function createUI(ev, element) {
-    if (W.selectionManager.getSelectedFeatures()[0].model.getSegmentIds().length < 2) {
+  function createNodeUI(ev, element) {
+    let selected = APIHelper.getSelected().filter((el) => el.type === 'node');
+    if (selected[0].getSegmentIds().length < 2) {
       return;
     }
     element.append(label);
     element.append(div);
     // Refresh
-    updateUI();
+    updateNodeUI();
   }
 
-  function updateUI() {
+  function updateNodeUI() {
     let node = W.selectionManager.getSelectedFeatures()[0].model;
-    let counter = countUturns(node);
+    let counter = countNodeUturns(node);
 
     // Change display properties of the buttons
     allow.style.display = counter.disallowed ? 'inline-block' : 'none';
@@ -107,7 +118,7 @@
     ;
   }
 
-  function countUturns(node) {
+  function countNodeUturns(node) {
     let counter = {
       allowed: 0,
       disallowed: 0
@@ -129,10 +140,17 @@
     return counter;
   }
 
+  // Handler for selected node
   function switchNodeUturn(status) {
-    let node = W.selectionManager.getSelectedFeatures()[0].model;
+    let selected = APIHelper.getSelected().filter((el) => el.type === 'node');
+    if (selected.length === 0) {
+      return;
+    }
+    let node = selected[0];
     let segmenstIds = node.getSegmentIds();
-
+    if (segmenstIds.length < 2) {
+      return;
+    }
     for (let i = 0; i < segmenstIds.length; i++) {
       let segment = W.model.segments.getObjectById(segmenstIds[i]);
       let turn = W.model.getTurnGraph().getTurnThroughNode(node, segment, segment);
@@ -142,6 +160,23 @@
           turn.withTurnData(turn.getTurnData().withState(status)))
       );
     }
-    updateUI();
+    updateNodeUI();
+  }
+
+  // Handler for selected segments
+  function switchSegmentUturn(direction = 'A') {
+    let segments = APIHelper.getSelectedSegments();
+    for (let i = 0, total = segments.length; i < total; i++) {
+      let segment = segments[i];
+      let node = (direction === 'A') ? segment.getFromNode() : segment.getToNode();
+      let status = segment.isTurnAllowed(segment, node) ? 0 : 1;
+      let turn = W.model.getTurnGraph().getTurnThroughNode(node, segment, segment);
+      W.model.actionManager.add(
+        new WazeActionSetTurn(
+          W.model.getTurnGraph(),
+          turn.withTurnData(turn.getTurnData().withState(status)) // enable it
+        )
+      );
+    }
   }
 })(window.jQuery);
