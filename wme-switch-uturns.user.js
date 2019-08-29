@@ -1,157 +1,147 @@
 // ==UserScript==
 // @name         WME Switch Uturns
-// @version      2018.08.01.001
+// @version      1.0.0
 // @description  Switches Uturns for selected node. Forked and improved "WME Add Uturn from node" script.
-// @author       ixxvivxxi, uranik, turbopirate
+// @author       ixxvivxxi, uranik, turbopirate, AntonShevchuk
 // @include      /^https:\/\/(www|beta)\.waze\.com(\/\w{2,3}|\/\w{2,3}-\w{2,3}|\/\w{2,3}-\w{2,3}-\w{2,3})?\/editor\b/
 // @grant        none
+// @require      https://greasyfork.org/scripts/24851-wazewrap/code/WazeWrap.js
+// @require      https://greasyfork.org/scripts/389117-wme-api-helper/code/WME%20API%20Helper.js?version=729071
 // @namespace    https://github.com/waze-ua/wme-switch-uturns
 // ==/UserScript==
 
-function Uturns_bootstrap()
-{
-    var bGreasemonkeyServiceDefined = false;
-    try
-    {
-        if ("object" === typeof Components.interfaces.gmIGreasemonkeyService)
-        {
-            bGreasemonkeyServiceDefined = true;
-        }
-    }
-    catch (err)
-    {
-        //Ignore.
-    }
-    if ( "undefined" === typeof unsafeWindow  ||  ! bGreasemonkeyServiceDefined)
-    {
-        unsafeWindow    = ( function ()
-        {
-            var dummyElem   = document.createElement('p');
-            dummyElem.setAttribute ('onclick', 'return window;');
-            return dummyElem.onclick ();
-        } ) ();
-    }
-    /* begin running the code! */
-    setTimeout(startUturns,999);
-}
+/* jshint esversion: 6 */
+/* global require, window, W, I18n, OL, APIHelper, WazeWrap */
 
-function getUturnsCount(node) {
-    var numUTurns=0;
-    for(var currentNode in W.model.nodes.objects)
-    {
-        var node2=W.model.nodes.getObjectById(currentNode);
-        if(node2.attributes.id==node.attributes.id)
-        {
-            if(node2===undefined)continue;
-            numUTurns=0;
-            for(var j=0;j<node2.attributes.segIDs.length;j++)
-            {
-                var segID=node2.attributes.segIDs[j];
-                var segment2=W.model.segments.getObjectById(segID);
-                if(segment2===undefined)continue;
-                var attributes=segment2.attributes;
-                if(attributes.fwdDirection===true&&attributes.revDirection===true)
-                {
-                    if(node2.attributes.segIDs.length>1)
-                    {
-                        if(segment2.isTurnAllowed(segment2,node2))
-                            numUTurns++;
-                    }
-                }
-            }
-        }
+(function ($) {
+  'use strict';
+
+  // Script name, uses as unique index
+  const NAME = 'SWITCH-UTURNS';
+
+  // Translations
+  const TRANSLATION = {
+    'en': {
+      title: 'Switch U-Turns',
+      allowed: 'Allowed',
+      disallowed: 'Disallowed',
+      allow_uturns: 'Allow all U-turns',
+      disallow_uturns: 'Disallow all U-turns',
+    },
+    'uk': {
+      title: 'Керування розворотами',
+      allowed: 'Дозволено',
+      disallowed: 'Заборонено',
+      allow_uturns: 'Дозволити усі розвороти',
+      disallow_uturns: 'Заборонити усі розвороти',
+    },
+    'ru': {
+      title: 'Управление разворотами',
+      allowed: 'Разрешено',
+      disallowed: 'Запрещено',
+      allow_uturns: 'Разрешить все развороты',
+      disallow_uturns: 'Запретить все развороты',
     }
-    console.log('u-turns count in selected node', numUTurns);
-    return numUTurns;
-}
+  };
 
-function getSegmentsCount(node) {
-    return node.attributes.segIDs.length;
-}
+  APIHelper.bootstrap();
+  APIHelper.addTranslation(NAME, TRANSLATION);
 
-function switchUturn(s) {
-    var wazeActionSetTurn= require("Waze/Model/Graph/Actions/SetTurn");
-    var node = W.selectionManager.getSelectedFeatures()[0].model;
-    var segIDs = node.attributes.segIDs;
+  $(document)
+    .on('ready.apihelper', ready)
+    .on('node.apihelper', '#edit-panel', createUI)
+  ;
 
-    for (var i = 0; i < segIDs.length; i++) {
-        var segment = W.model.segments.objects[segIDs[i]];
-        var turn = W.model.getTurnGraph().getTurnThroughNode(node, segment, segment);
-        W.model.actionManager.add(new wazeActionSetTurn(W.model.getTurnGraph(), turn.withTurnData(turn.getTurnData().withState(s))));
+  let label, div, text, allow, disallow;
+
+  let WazeActionSetTurn = require('Waze/Model/Graph/Actions/SetTurn');
+
+  function ready() {
+    // Label
+    label = document.createElement('label');
+    label.innerHTML = I18n.t(NAME).title;
+    label.className = 'control-label';
+    // div
+    div = document.createElement('div');
+    div.className = 'controls';
+
+    // Text
+    text = document.createElement('p');
+    div.append(text);
+    // Allow button
+    allow = document.createElement('button');
+    allow.className = 'btn btn-default';
+    allow.innerHTML = I18n.t(NAME).allow_uturns;
+    allow.onclick = () => switchNodeUturn(1);
+    div.append(allow);
+    // Disallow button
+    disallow = document.createElement('button');
+    disallow.className = 'btn btn-default';
+    disallow.innerHTML = I18n.t(NAME).disallow_uturns;
+    disallow.onclick = () => switchNodeUturn(0);
+    div.append(disallow);
+  }
+
+  function createUI(ev, element) {
+    if (W.selectionManager.getSelectedFeatures()[0].model.getSegmentIds().length < 2) {
+      return;
     }
-}
+    element.append(label);
+    element.append(div);
+    // Refresh
+    updateUI();
+  }
 
-function getI18N(id, loc) {
-    var i18n = {
-        "allow_uturns": {
-            "en" : "Allow all U-turns",
-            "ru" : "Разрешить все развороты",
-            "uk" : "Дозволити усі розвороти"
-        },
-        "disallow_uturns": {
-            "en": "Disallow all U-turns",
-            "ru": "Запретить все развороты",
-            "uk": "Заборонити усі розвороти"
-        }
+  function updateUI() {
+    let node = W.selectionManager.getSelectedFeatures()[0].model;
+    let counter = countUturns(node);
+
+    // Change display properties of the buttons
+    allow.style.display = counter.disallowed ? 'inline-block' : 'none';
+    disallow.style.display = counter.allowed ? 'inline-block' : 'none';
+
+    // Change text
+    text.innerHTML =
+      I18n.t(NAME).allowed + ': ' + counter.allowed + '<br/>' +
+      I18n.t(NAME).disallowed + ': ' + counter.disallowed
+    ;
+  }
+
+  function countUturns(node) {
+    let counter = {
+      allowed: 0,
+      disallowed: 0
     };
 
-    if (id in i18n) {
-        if (loc in i18n[id]) {
-            return i18n[id][loc];
-        } else {
-            return i18n[id].en;
-        }
+    let segmenstIds = node.getSegmentIds();
+
+    for (let i = 0; i < segmenstIds.length; i++) {
+      let segment = W.model.segments.getObjectById(segmenstIds[i]);
+      if (!segment) {
+        continue;
+      }
+      if (segment.isTurnAllowed(segment, node)) {
+        counter.allowed++;
+      } else {
+        counter.disallowed++;
+      }
     }
-}
+    return counter;
+  }
 
-function updateButtons() {
-    var uturnCount = getUturnsCount(W.selectionManager.getSelectedFeatures()[0].model);
-    var segsCount = getSegmentsCount(W.selectionManager.getSelectedFeatures()[0].model);
+  function switchNodeUturn(status) {
+    let node = W.selectionManager.getSelectedFeatures()[0].model;
+    let segmenstIds = node.getSegmentIds();
 
-    var disallowBtn = $('#edit-panel .side-panel-section #disallowUturns');
-    var allowBtn = $('#edit-panel .side-panel-section #allowUturns');
-
-    if (segsCount == 1) {
-        allowBtn.hide();
-        disallowBtn.hide();
-        return;
+    for (let i = 0; i < segmenstIds.length; i++) {
+      let segment = W.model.segments.getObjectById(segmenstIds[i]);
+      let turn = W.model.getTurnGraph().getTurnThroughNode(node, segment, segment);
+      W.model.actionManager.add(
+        new WazeActionSetTurn(
+          W.model.getTurnGraph(),
+          turn.withTurnData(turn.getTurnData().withState(status)))
+      );
     }
-
-    if (uturnCount === 0) {
-        allowBtn.show();
-        disallowBtn.hide();
-        return;
-    }
-
-    if (uturnCount != segsCount) {
-        allowBtn.show();
-        disallowBtn.show();
-    } else {
-        allowBtn.hide();
-        disallowBtn.show();
-    }
-}
-
-function startUturns() {
-    W.selectionManager.events.register("selectionchanged", null, showButton);
-    function showButton() {
-        var loc = I18n.locale;
-        if(W.selectionManager.getSelectedFeatures().length === 0 || W.selectionManager.getSelectedFeatures().length > 1) return;
-        if(W.selectionManager.getSelectedFeatures()[0].model.type == "node") {
-            $('#edit-panel .side-panel-section:first-child').append('<button id="disallowUturns" class="btn btn-default">' + getI18N("disallow_uturns", loc) + '</button>');
-            $('#edit-panel .side-panel-section:first-child').append('<button id="allowUturns" class="btn btn-default">' + getI18N("allow_uturns", loc) + '</button>');
-            updateButtons();
-        }
-    }
-    $('#sidebar').on('click', '#allowUturns', function(event) {
-        switchUturn(1);
-        updateButtons();
-    });
-
-    $('#sidebar').on('click', '#disallowUturns', function(event) {
-        switchUturn(0);
-        updateButtons();
-    });
-}
-
-Uturns_bootstrap();
+    updateUI();
+  }
+})(window.jQuery);
