@@ -1,19 +1,19 @@
 // ==UserScript==
 // @name         WME Switch Uturns
-// @version      1.0.2
+// @version      1.0.3
 // @description  Switches U-turns for selected node or segment. Forked and improved "WME Add Uturn from node" script.
 // @author       ixxvivxxi, uranik, turbopirate, AntonShevchuk
 // @include      /^https:\/\/(www|beta)\.waze\.com(\/\w{2,3}|\/\w{2,3}-\w{2,3}|\/\w{2,3}-\w{2,3}-\w{2,3})?\/editor\b/
 // @grant        none
 // @require      https://greasyfork.org/scripts/24851-wazewrap/code/WazeWrap.js
-// @require      https://greasyfork.org/scripts/389117-apihelper/code/APIHelper.js?version=729351
+// @require      https://greasyfork.org/scripts/389117-apihelper/code/APIHelper.js?version=729389
 // @namespace    https://github.com/waze-ua/wme-switch-uturns
 // @updateURL    https://github.com/waze-ua/wme-switch-uturns/raw/master/wme-switch-uturns.user.js
 // @downloadURL  https://github.com/waze-ua/wme-switch-uturns/raw/master/wme-switch-uturns.user.js
 // ==/UserScript==
 
 /* jshint esversion: 6 */
-/* global require, window, W, I18n, OL, APIHelper, WazeWrap */
+/* global require, window, W, I18n, OL, WazeWrap, APIHelper */
 
 (function ($) {
   'use strict';
@@ -51,10 +51,13 @@
 
   APIHelper.bootstrap();
   APIHelper.addTranslation(NAME, TRANSLATION);
+  APIHelper.addStyle(
+    '#node-edit-general button { margin-bottom: 2px }'
+  );
 
   $(document)
     .on('ready.apihelper', ready)
-    .on('node.apihelper', '#edit-panel', createNodeUI)
+    .on('node.apihelper', createNodeUI)
   ;
 
   let sl, label, div, text, allow, disallow;
@@ -95,23 +98,33 @@
     // Hotkeys for segment manipulation
     new WazeWrap.Interface.Shortcut(NAME + '-segment-a', I18n.t(NAME).switch_uturn + ' A', NAME, I18n.t(NAME).title, 'A+Q', () => switchSegmentUturn('A'), null).add();
     new WazeWrap.Interface.Shortcut(NAME + '-segment-b', I18n.t(NAME).switch_uturn + ' B', NAME, I18n.t(NAME).title, 'A+W', () => switchSegmentUturn('B'), null).add();
+    // Update count of UTurns on events
+    WazeWrap.Events.register('selectionchanged', null, updateNodeUI);
+    WazeWrap.Events.register('afterundoaction', null, updateNodeUI);
+    WazeWrap.Events.register('afterclearactions', null, updateNodeUI);
+    WazeWrap.Events.register('afteraction', null, updateNodeUI);
   }
 
   function createNodeUI(ev, element) {
-    let selected = APIHelper.getSelected().filter((el) => el.type === 'node');
-    if (selected[0].getSegmentIds().length < 2) {
+    let node = APIHelper.getSelectedNode();
+    if (!node) {
+      return;
+    }
+    if (node.getSegmentIds().length < 2) {
       return;
     }
     element.append(sl);
     element.append(label);
     element.append(div);
-    element.append(sl);
     // Refresh
     updateNodeUI();
   }
 
   function updateNodeUI() {
-    let node = W.selectionManager.getSelectedFeatures()[0].model;
+    let node = APIHelper.getSelectedNode();
+    if (!node) {
+      return;
+    }
     let counter = countNodeUturns(node);
 
     // Change display properties of the buttons
@@ -149,11 +162,10 @@
 
   // Handler for selected node
   function switchNodeUturn(status) {
-    let selected = APIHelper.getSelected().filter((el) => el.type === 'node');
-    if (selected.length === 0) {
+    let node = APIHelper.getSelectedNode();
+    if (!node) {
       return;
     }
-    let node = selected[0];
     let segmenstIds = node.getSegmentIds();
     if (segmenstIds.length < 2) {
       return;
