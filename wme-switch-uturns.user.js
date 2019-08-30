@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         WME Switch Uturns
-// @version      1.0.3
+// @version      1.0.4
 // @description  Switches U-turns for selected node or segment. Forked and improved "WME Add Uturn from node" script.
 // @author       ixxvivxxi, uranik, turbopirate, AntonShevchuk
 // @include      /^https:\/\/(www|beta)\.waze\.com(\/\w{2,3}|\/\w{2,3}-\w{2,3}|\/\w{2,3}-\w{2,3}-\w{2,3})?\/editor\b/
 // @grant        none
 // @require      https://greasyfork.org/scripts/24851-wazewrap/code/WazeWrap.js
-// @require      https://greasyfork.org/scripts/389117-apihelper/code/APIHelper.js?version=729389
+// @require      https://greasyfork.org/scripts/389117-apihelper/code/APIHelper.js?version=729417
 // @namespace    https://github.com/waze-ua/wme-switch-uturns
 // @updateURL    https://github.com/waze-ua/wme-switch-uturns/raw/master/wme-switch-uturns.user.js
 // @downloadURL  https://github.com/waze-ua/wme-switch-uturns/raw/master/wme-switch-uturns.user.js
@@ -99,7 +99,6 @@
     new WazeWrap.Interface.Shortcut(NAME + '-segment-a', I18n.t(NAME).switch_uturn + ' A', NAME, I18n.t(NAME).title, 'A+Q', () => switchSegmentUturn('A'), null).add();
     new WazeWrap.Interface.Shortcut(NAME + '-segment-b', I18n.t(NAME).switch_uturn + ' B', NAME, I18n.t(NAME).title, 'A+W', () => switchSegmentUturn('B'), null).add();
     // Update count of UTurns on events
-    WazeWrap.Events.register('selectionchanged', null, updateNodeUI);
     WazeWrap.Events.register('afterundoaction', null, updateNodeUI);
     WazeWrap.Events.register('afterclearactions', null, updateNodeUI);
     WazeWrap.Events.register('afteraction', null, updateNodeUI);
