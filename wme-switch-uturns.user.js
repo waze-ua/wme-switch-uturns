@@ -6,7 +6,7 @@
 // @include      /^https:\/\/(www|beta)\.waze\.com(\/\w{2,3}|\/\w{2,3}-\w{2,3}|\/\w{2,3}-\w{2,3}-\w{2,3})?\/editor\b/
 // @grant        none
 // @require      https://greasyfork.org/scripts/24851-wazewrap/code/WazeWrap.js
-// @require      https://greasyfork.org/scripts/389117-wme-api-helper/code/WME%20API%20Helper.js?version=729071
+// @require      https://greasyfork.org/scripts/389117-apihelper/code/APIHelper.js?version=729351
 // @namespace    https://github.com/waze-ua/wme-switch-uturns
 // @updateURL    https://github.com/waze-ua/wme-switch-uturns/raw/master/wme-switch-uturns.user.js
 // @downloadURL  https://github.com/waze-ua/wme-switch-uturns/raw/master/wme-switch-uturns.user.js
@@ -57,19 +57,22 @@
     .on('node.apihelper', '#edit-panel', createNodeUI)
   ;
 
-  let label, div, text, allow, disallow;
+  let sl, label, div, text, allow, disallow;
 
   let WazeActionSetTurn = require('Waze/Model/Graph/Actions/SetTurn');
 
   function ready() {
+    // Separator line
+    sl = document.createElement('div');
+    sl.className = 'separator-line';
+    sl.style.marginBottom = '16px';
     // Label
     label = document.createElement('label');
     label.innerHTML = I18n.t(NAME).title;
     label.className = 'control-label';
-    // div
+    // Controls div
     div = document.createElement('div');
     div.className = 'controls';
-
     // Text
     text = document.createElement('p');
     div.append(text);
@@ -99,8 +102,10 @@
     if (selected[0].getSegmentIds().length < 2) {
       return;
     }
+    element.append(sl);
     element.append(label);
     element.append(div);
+    element.append(sl);
     // Refresh
     updateNodeUI();
   }
