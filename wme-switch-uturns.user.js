@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         WME Switch Uturns
-// @version      2019.09.20.001
+// @version      2019.11.21.001
 // @description  Switches U-turns for selected node or segment. Forked and improved "WME Add Uturn from node" script.
 // @author       ixxvivxxi, uranik, turbopirate, AntonShevchuk
 // @include      /^https:\/\/(www|beta)\.waze\.com(\/\w{2,3}|\/\w{2,3}-\w{2,3}|\/\w{2,3}-\w{2,3}-\w{2,3})?\/editor\b/
@@ -13,7 +13,15 @@
 // ==/UserScript==
 
 /* jshint esversion: 6 */
-/* global require, window, W, I18n, OL, WazeWrap, APIHelper */
+/* global window */
+/* global console */
+/* global require */
+/* global $ */
+/* global W */
+/* global OL */
+/* global I18n */
+/* global WazeWrap */
+/* global APIHelper */
 
 (function ($) {
   'use strict';
@@ -62,9 +70,11 @@
 
   let sl, label, div, text, allow, disallow;
 
-  let WazeActionSetTurn = require('Waze/Model/Graph/Actions/SetTurn');
+  let WazeActionSetTurn;
 
   function ready() {
+    // Require Waze components
+    WazeActionSetTurn = require('Waze/Model/Graph/Actions/SetTurn');
     // Separator line
     sl = document.createElement('div');
     sl.className = 'separator-line';
