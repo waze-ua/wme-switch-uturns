@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         WME Switch Uturns
-// @version      2020.08.15.001
+// @version      2022.08.18.001
 // @description  Switches U-turns for selected node or segment. Forked and improved "WME Add Uturn from node" script.
 // @author       ixxvivxxi, uranik, turbopirate, AntonShevchuk
 // @include      /^https:\/\/(www|beta)\.waze\.com(\/\w{2,3}|\/\w{2,3}-\w{2,3}|\/\w{2,3}-\w{2,3}-\w{2,3})?\/editor\b/
 // @grant        none
-// @require      https://greasyfork.org/scripts/24851-wazewrap/code/WazeWrap.js
-// @require      https://greasyfork.org/scripts/389117-apihelper/code/APIHelper.js?version=837602
+// @require      https://greasyfork.org/scripts/389117-apihelper/code/APIHelper.js?version=1082818
+// @require      https://greasyfork.org/scripts/389577-apihelperui/code/APIHelperUI.js?version=1082911
 // @namespace    https://github.com/waze-ua/wme-switch-uturns
 // @updateURL    https://github.com/waze-ua/wme-switch-uturns/raw/master/wme-switch-uturns.user.js
 // @downloadURL  https://github.com/waze-ua/wme-switch-uturns/raw/master/wme-switch-uturns.user.js
@@ -18,7 +18,6 @@
 /* global W */
 /* global OL */
 /* global I18n */
-/* global WazeWrap */
 /* global APIHelper */
 
 (function ($) {
@@ -42,8 +41,8 @@
       switch_uturn: 'Змінити розворот у точці',
       allowed: 'Дозволено',
       disallowed: 'Заборонено',
-      allow_uturns: 'Дозволити усі розвороти',
-      disallow_uturns: 'Заборонити усі розвороти',
+      allow_uturns: 'Дозволити всі розвороти',
+      disallow_uturns: 'Заборонити всі розвороти',
     },
     'ru': {
       title: 'Управление разворотами',
@@ -88,28 +87,29 @@
     text = document.createElement('p');
     div.append(text);
     // Allow button
-    allow = document.createElement('button');
-    allow.className = 'btn btn-default';
+    // <wz-button color="shadowed" class="disallow-connections">Заборонити всі повороти</wz-button>
+    allow = document.createElement('wz-button');
+    allow.color = 'shadowed';
     allow.innerHTML = I18n.t(NAME).allow_uturns;
     allow.onclick = () => switchNodeUturn(1);
     div.append(allow);
     // Disallow button
-    disallow = document.createElement('button');
-    disallow.className = 'btn btn-default';
+    disallow = document.createElement('wz-button');
+    disallow.color = 'shadowed';
     disallow.innerHTML = I18n.t(NAME).disallow_uturns;
     disallow.onclick = () => switchNodeUturn(0);
     div.append(disallow);
 
     // Hotkeys for node manipulation
-    new WazeWrap.Interface.Shortcut(NAME + '-node-allow', I18n.t(NAME).allow_uturns, NAME, I18n.t(NAME).title, 'A+A', () => switchNodeUturn(1), null).add();
-    new WazeWrap.Interface.Shortcut(NAME + '-node-disallow', I18n.t(NAME).disallow_uturns, NAME, I18n.t(NAME).title, 'A+S', () => switchNodeUturn(0), null).add();
+    new APIHelperUIShortcut(NAME + '-node-allow', I18n.t(NAME).allow_uturns, NAME, I18n.t(NAME).title, 'A+A', () => switchNodeUturn(1), null).add();
+    new APIHelperUIShortcut(NAME + '-node-disallow', I18n.t(NAME).disallow_uturns, NAME, I18n.t(NAME).title, 'A+S', () => switchNodeUturn(0), null).add();
     // Hotkeys for segment manipulation
-    new WazeWrap.Interface.Shortcut(NAME + '-segment-a', I18n.t(NAME).switch_uturn + ' A', NAME, I18n.t(NAME).title, 'A+Q', () => switchSegmentUturn('A'), null).add();
-    new WazeWrap.Interface.Shortcut(NAME + '-segment-b', I18n.t(NAME).switch_uturn + ' B', NAME, I18n.t(NAME).title, 'A+W', () => switchSegmentUturn('B'), null).add();
+    new APIHelperUIShortcut(NAME + '-segment-a', I18n.t(NAME).switch_uturn + ' A', NAME, I18n.t(NAME).title, 'A+Q', () => switchSegmentUturn('A'), null).add();
+    new APIHelperUIShortcut(NAME + '-segment-b', I18n.t(NAME).switch_uturn + ' B', NAME, I18n.t(NAME).title, 'A+W', () => switchSegmentUturn('B'), null).add();
     // Update count of UTurns on events
-    WazeWrap.Events.register('afterundoaction', null, updateNodeUI);
-    WazeWrap.Events.register('afterclearactions', null, updateNodeUI);
-    WazeWrap.Events.register('afteraction', null, updateNodeUI);
+    W.model.actionManager.events.register('afterundoaction', null, updateNodeUI);
+    W.model.actionManager.events.register('afterclearactions', null, updateNodeUI);
+    W.model.actionManager.events.register('afteraction', null, updateNodeUI);
   }
 
   function createNodeUI(ev, element) {
