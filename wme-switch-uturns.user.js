@@ -87,7 +87,6 @@
     text = document.createElement('p')
     div.append(text)
     // Allow button
-    // <wz-button color="shadowed" class="disallow-connections">Заборонити всі повороти</wz-button>
     allow = document.createElement('wz-button')
     allow.color = 'shadowed'
     allow.innerHTML = I18n.t(NAME).allow_uturns
