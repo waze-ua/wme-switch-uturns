@@ -1,21 +1,18 @@
 // ==UserScript==
 // @name         WME Switch Uturns
-// @version      2022.09.09.001
+// @version      2022.09.15.001
 // @description  Switches U-turns for selected node or segment. Forked and improved "WME Add Uturn from node" script.
 // @author       ixxvivxxi, uranik, turbopirate, AntonShevchuk
 // @namespace    https://github.com/waze-ua/wme-switch-uturns
 // @updateURL    https://github.com/waze-ua/wme-switch-uturns/raw/master/wme-switch-uturns.user.js
 // @downloadURL  https://github.com/waze-ua/wme-switch-uturns/raw/master/wme-switch-uturns.user.js
-// @match        https://www.waze.com/editor*
-// @match        https://www.waze.com/*/editor*
-// @match        https://beta.waze.com/editor*
-// @match        https://beta.waze.com/*/editor*
-// @exclude      https://www.waze.com/user/editor*
-// @exclude      https://beta.waze.com/user/editor*
+// @match        https://*.waze.com/editor*
+// @match        https://*.waze.com/*/editor*
+// @exclude      https://*.waze.com/user/editor*
 // @grant        none
 // @require      https://greasyfork.org/scripts/450160-wme-bootstrap/code/WME-Bootstrap.js?version=1090054
 // @require      https://greasyfork.org/scripts/450221-wme-base/code/WME-Base.js?version=1090055
-// @require      https://greasyfork.org/scripts/450320-wme-ui/code/WME-UI.js?version=1091627
+// @require      https://greasyfork.org/scripts/450320-wme-ui/code/WME-UI.js?version=1093989
 // ==/UserScript==
 
 /* jshint esversion: 8 */
@@ -66,10 +63,6 @@
   WMEUI.addStyle(STYLE)
 
   class UTurns extends WMEBase {
-    constructor (name) {
-      super(name)
-    }
-
     /**
      * Handler for `node.wme` event
      * @param {jQuery.Event} event
@@ -233,11 +226,11 @@
       let UTurnsInstance = new UTurns(NAME)
 
       // Hotkeys for node manipulation
-      new WMEUIShortcut(NAME + '-node-allow', I18n.t(NAME).allow_uturns, NAME, I18n.t(NAME).title, 'A+A', () => UTurnsInstance.switchNodeUturn(1))
-      new WMEUIShortcut(NAME + '-node-disallow', I18n.t(NAME).disallow_uturns, NAME, I18n.t(NAME).title, 'A+S', () => UTurnsInstance.switchNodeUturn(0))
+      WMEUI.addShortcut(NAME + '-node-allow', I18n.t(NAME).allow_uturns, NAME, I18n.t(NAME).title, 'A+A', () => UTurnsInstance.switchNodeUturn(1))
+      WMEUI.addShortcut(NAME + '-node-disallow', I18n.t(NAME).disallow_uturns, NAME, I18n.t(NAME).title, 'A+S', () => UTurnsInstance.switchNodeUturn(0))
       // Hotkeys for segment manipulation
-      new WMEUIShortcut(NAME + '-segment-a', I18n.t(NAME).switch_uturn + ' A', NAME, I18n.t(NAME).title, 'A+Q', () => UTurnsInstance.switchSegmentUturn('A'))
-      new WMEUIShortcut(NAME + '-segment-b', I18n.t(NAME).switch_uturn + ' B', NAME, I18n.t(NAME).title, 'A+W', () => UTurnsInstance.switchSegmentUturn('B'))
+      WMEUI.addShortcut(NAME + '-segment-a', I18n.t(NAME).switch_uturn + ' A', NAME, I18n.t(NAME).title, 'A+Q', () => UTurnsInstance.switchSegmentUturn('A'))
+      WMEUI.addShortcut(NAME + '-segment-b', I18n.t(NAME).switch_uturn + ' B', NAME, I18n.t(NAME).title, 'A+W', () => UTurnsInstance.switchSegmentUturn('B'))
       // Update count of UTurns on events
       W.model.actionManager.events.register('afterundoaction', null, () => UTurnsInstance.updateNodeUI())
       W.model.actionManager.events.register('afterclearactions', null, () => UTurnsInstance.updateNodeUI())
