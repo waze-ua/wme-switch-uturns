@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         WME Switch Uturns
-// @version      2022.09.15.001
+// @version      2022.09.16.001
 // @description  Switches U-turns for selected node or segment. Forked and improved "WME Add Uturn from node" script.
 // @author       ixxvivxxi, uranik, turbopirate, AntonShevchuk
 // @namespace    https://github.com/waze-ua/wme-switch-uturns
@@ -185,6 +185,9 @@
       }
       for (let i = 0; i < segmenstIds.length; i++) {
         let segment = W.model.segments.getObjectById(segmenstIds[i])
+        if (segment.isOneWay()) {
+          continue;
+        }
         let turn = W.model.getTurnGraph().getTurnThroughNode(node, segment, segment)
         W.model.actionManager.add(
           new WazeActionSetTurn(
@@ -203,6 +206,9 @@
       let segments = WME.getSelectedSegments()
       for (let i = 0, total = segments.length; i < total; i++) {
         let segment = segments[i]
+        if (segment.isOneWay()) {
+          continue;
+        }
         let node = (direction === 'A') ? segment.getFromNode() : segment.getToNode()
         let status = segment.isTurnAllowed(segment, node) ? 0 : 1
         let turn = W.model.getTurnGraph().getTurnThroughNode(node, segment, segment)
