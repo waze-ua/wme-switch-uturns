@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         WME Switch Uturns
-// @version      2022.09.16.001
+// @version      2022.09.16.002
 // @description  Switches U-turns for selected node or segment. Forked and improved "WME Add Uturn from node" script.
 // @author       ixxvivxxi, uranik, turbopirate, AntonShevchuk
 // @namespace    https://github.com/waze-ua/wme-switch-uturns
@@ -9,6 +9,7 @@
 // @match        https://*.waze.com/editor*
 // @match        https://*.waze.com/*/editor*
 // @exclude      https://*.waze.com/user/editor*
+// @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAH8AAAB/CAMAAADxY+0hAAAAh1BMVEUKg8j///8AAADs8vkAdMJycnIAf8cAfcZ6tN2RweMAgcfO5PMbi8wAe8X0+PsghsmTk5NFRUWNjY3IyMg4ODhfX195eXlmZmbx8fFmqNjI3/BeotUSEhK9vb3W1tbm5uZNnNKly+fa6vWFhYVRUVEeHh6Pt92u0uqbv+Fzqdc+lM+61uwAbsAz7xYrAAAESklEQVRoge2b6XbyIBCGIVGiJCRG46dZrEvrFnv/1/fhHszCJAfSP8yPtqe1PBMYBnTmRfhus2mYWX1ZFk5mDy66fV2FlhXNh33ZPLKscPXmT6z99GuJ+7Pl13RvTZ78oTVc82++3Zf5nLbm1Dt/av3jPySxxwb9GPPihBP/WdMrf2UtMLY3jFDUl1HCNjbGC2vF+WG25ninN/jdHO7AOgsxml3jIO0bzx1Irys/QxPrCyesdzxCLMFf1gRF0RLH/S3922iMl1GEsjn2gz/hBz6eZ4jvQvsvpp8vgM0zz40/6PDflBLnnjAYczrt3UF3PnUY2hy2yc72/Z17PJ09wlq70JlPWTBKfDGj77atM1hHPiX50a44U3w3Doh2PnW8o19Bv09C3GYVuvApGTcerG4O30sd+E6+kx3tB3AUtOezUe3Uv+0CzWat+ax57l9RQGEOtOUD8dwBBHKgJZ9tgXh+mwEtQTu+MwLj+TaAONCKTzaVoedzq/r9FrAN2/ApKm88e3ve5J6Xpwe37MNZngrb8MuLf8kZT/g81PlBOAgOJQ/kmbAFn+ZlujA+oZ8eHKUT0IafiIOPS0mOOrl4KPkbmQNwPtl8LG5VdJFADJGLLAThfJbI8dcbkeCAn0siAMynubC247oHI+ISyPYgmO8IifdSf8CJ62RL0jD8+YV59RpGdYSF2ijie8KsNoW1uE9Pze/qoHxyhj4+H/NSeOmueVwoX8h9kjFFX9U8v7D7DpKs4hW3imSugPxBcUhJTCHiFl6cNjoLfv4C329+JP7iYgCMVPApLfBle1oMFjX84vZzZaeqcE0aG77hG77hG77hG77hG77hG77hG77hG77hG77hV/Pp2wQ+KfxBIz8oWPEzZbf4B4383PbfVhgRF36daOQ7gFpvZYFJEb+q3vhh1eUVVfFHUgnery7DKNt/5FKLvtmo+sN9ZXxh25VtV1PcUpd/nFMTv+6jfYX5j1V1+TzsWFfbU8gncS3ersw9ivliLUOw+sKCSv5H3fVtbn1xX+n5V9fs1FCEUsr/qGg/rTb4VPOrQ7Cxu0bx/YO5ZX5t/V0DvyIEm9urVN+/yo0veeOgqvn0o6sDH5uLysrvnx8hKOsVVn//JUJPw0nS1KH5/r2TNfWo5wsh2FxR18OnwesglvYU6eC/x7RlLUV6+Mh5ZEFZ84Uu/qOtBtKnqIWPyC0EU0BTpR4+dWxI8GnjIzKS97Pp5CO2G4M0Mrr4yIO1VWvjw3qaNfJhZvgd+Ar1Py34d/1PtlCqf4Lzr/qnRYbCUKn+qwU/xsswVK1/g/Mf+jfF+j8w/6r/m1gzhMO9Sv0jlH/TP+7Dm/5zyI/2VJH+kwj8miEpYelL/4m/H/pXqkL/+lt8uzD+rda/oof+9fup/12o0/8W3y/WjXjT/y6e+t+rDjTrXf+cXdW/T/337Kd3/ffPXYGOHh7NJlGP+vfopX//D8KfY21oPu84AAAAAElFTkSuQmCC
 // @grant        none
 // @require      https://greasyfork.org/scripts/450160-wme-bootstrap/code/WME-Bootstrap.js?version=1090054
 // @require      https://greasyfork.org/scripts/450221-wme-base/code/WME-Base.js?version=1090055
