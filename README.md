@@ -28,3 +28,6 @@ Adds/removes u-turns from node
 <td align='center'>Switch u-turn for the point <strong>B</strong> of the selected segment</td>
 </tr>
 </table>
+
+## Links
+Script homepage: https://github.com/waze-ua/wme-switch-uturns  
