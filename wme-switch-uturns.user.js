@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         WME Switch Uturns
-A// @version      2022.12.28.001
+// @version      2023.01.06.001
 // @description  Switches U-turns for selected node or segment. Forked and improved "WME Add Uturn from node" script.
 // @author       ixxvivxxi, uranik, turbopirate, AntonShevchuk
 // @namespace    https://github.com/waze-ua/wme-switch-uturns
