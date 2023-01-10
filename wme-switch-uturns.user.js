@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         WME Switch Uturns
-// @version      2023.01.06.001
+// @version      2023.01.10.001
 // @description  Switches U-turns for selected node or segment. Forked and improved "WME Add Uturn from node" script.
 // @author       ixxvivxxi, uranik, turbopirate, AntonShevchuk
 // @namespace    https://greasyfork.org/users/160654-waze-ukraine
@@ -14,7 +14,7 @@
 // @require      https://greasyfork.org/scripts/450160-wme-bootstrap/code/WME-Bootstrap.js?version=1135567
 // @require      https://greasyfork.org/scripts/452563-wme/code/WME.js?version=1101598
 // @require      https://greasyfork.org/scripts/450221-wme-base/code/WME-Base.js?version=1129908
-// @require      https://greasyfork.org/scripts/450320-wme-ui/code/WME-UI.js?version=1135634
+// @require      https://greasyfork.org/scripts/450320-wme-ui/code/WME-UI.js?version=1137009
 // ==/UserScript==
 
 /* jshint esversion: 8 */
