@@ -3,8 +3,9 @@ Adds/removes u-turns from node
 
 ![](screenshot.png)
 
-## Shortcuts
+![](settings.png)
 
+## Shortcuts
 
 <table style="width:100%">
 <tr>
@@ -30,4 +31,5 @@ Adds/removes u-turns from node
 </table>
 
 ## Links
-Script homepage: https://github.com/waze-ua/wme-switch-uturns  
+Script homepage: https://github.com/waze-ua/wme-switch-uturns    
+GreasyFork: https://greasyfork.org/scripts/457553-wme-switch-uturns
