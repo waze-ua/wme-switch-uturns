@@ -22,7 +22,7 @@
 /* global $, jQuery */
 /* global W */
 /* global I18n */
-/* global WME, WMEBase, WMEUI, WMEUIHelper, WMEUIShortcut */
+/* global WME, WMEBase, WMEUI, WMEUIHelper, WMEUIHelperTab, WMEUIShortcut */
 
 (function () {
   'use strict'
@@ -34,37 +34,75 @@
   const TRANSLATION = {
     'en': {
       title: 'Switch U-Turns',
-      switch_uturn: 'Switch U-turn at point',
+      description: 'Choose a segment or a node to switch u-turns with <a href="#keyboard-dialog" target="_blank" rel="noopener noreferrer" data-toggle="modal">Keyboard shortcuts</a> or buttons',
+      count: 'Count nodes and U-Turns',
+      switch: 'Switch U-turn at point',
+      nodes: 'Nodes',
       allowed: 'Allowed',
       disallowed: 'Disallowed',
-      allow_uturns: 'Allow all U-turns',
-      disallow_uturns: 'Disallow all U-turns',
+      allow: 'Allow all U-turns',
+      disallow: 'Disallow all U-turns',
     },
     'uk': {
       title: 'Керування розворотами',
-      switch_uturn: 'Змінити розворот у точці',
+      description: 'Оберіть сегмент або вузол щоб змінити розвороти за допомогою <a href="#keyboard-dialog" target="_blank" rel="noopener noreferrer" data-toggle="modal">гарячих клавіш</a> або кнопок',
+      count: 'Порахувати вузли та розвороти',
+      switch: 'Змінити розворот у вузлі',
+      nodes: 'Вузли',
       allowed: 'Дозволено',
       disallowed: 'Заборонено',
-      allow_uturns: 'Дозволити всі розвороти',
-      disallow_uturns: 'Заборонити всі розвороти',
+      allow: 'Дозволити всі розвороти',
+      disallow: 'Заборонити всі розвороти',
     },
     'ru': {
       title: 'Управление разворотами',
-      switch_uturn: 'Изменить разворот в точке',
+      description: 'Выберите сегмент или узел для изменения разворотов с помощью <a href="#keyboard-dialog" target="_blank" rel="noopener noreferrer" data-toggle="modal">комбинаций клавиш</a> или кнопок',
+      count: 'Посчитать узлы и развороты',
+      switch: 'Изменить разворот в узле',
+      nodes: 'Узлы',
       allowed: 'Разрешено',
       disallowed: 'Запрещено',
-      allow_uturns: 'Разрешить все развороты',
-      disallow_uturns: 'Запретить все развороты',
+      allow: 'Разрешить все развороты',
+      disallow: 'Запретить все развороты',
     }
   }
 
-  const STYLE = '#node-edit-general button { margin-bottom: 2px }' +
-    'p.info-bar { border-top: 1px solid #ccc; color: #777; font-size: x-small; margin-top: 15px; padding-top: 10px; text-align: center; }'
+  const STYLE =
+    'p.switch-uturns-counter { margin-top: 15px; padding-left: 15px; }' +
+    'p.switch-uturns-info { border-top: 1px solid #ccc; color: #777; font-size: x-small; margin-top: 15px; padding-top: 10px; text-align: center; }'
 
   WMEUI.addTranslation(NAME, TRANSLATION)
   WMEUI.addStyle(STYLE)
 
+  const ALLOW = 1
+  const DISALLOW = 0
+
   class UTurns extends WMEBase {
+    constructor (name, settings = null) {
+      super(name, settings)
+
+      /** @type {WMEUIHelper} */
+      this.helper = new WMEUIHelper(this.name)
+
+      /** @type {WMEUIHelperTab} */
+      this.tab = this.helper.createTab(
+        I18n.t(this.name).title,
+        {
+          image: GM_info.script.icon
+        }
+      )
+      this.tab.addText('description', I18n.t(this.name).description)
+      let button = this.tab.addButton(NAME, I18n.t(name).count, '', () => this.updateTabUI(this.countUturns()))
+      button.html().className += ' waze-btn-blue'
+
+      this.tab.addText('counter', '')
+      this.tab.addText(
+        'info',
+        '<a href="' + GM_info.scriptUpdateURL + '">' + GM_info.script.name + '</a> ' + GM_info.script.version
+      )
+      // Inject custom HTML to container in the WME interface
+      this.tab.inject()
+    }
     /**
      * Handler for `node.wme` event
      * @param {jQuery.Event} event
@@ -76,7 +114,7 @@
       if (model.getSegmentIds().length < 2) {
         return
       }
-      this.createPanel(element)
+      this.createPanel(element.querySelector('.form-group .connections-edit'))
       this.updateNodeUI()
     }
 
@@ -85,44 +123,41 @@
      * @param {HTMLElement} element
      */
     createPanel (element) {
-      // Separator line
-      let sl = document.createElement('div')
-      sl.className = 'separator-line'
-      sl.style.marginBottom = '16px'
-      // Label
-      let label = document.createElement('label')
-      label.innerHTML = I18n.t(NAME).title
-      label.className = 'control-label'
-      // Controls div
-      let div = document.createElement('div')
-      div.className = 'controls'
+      // Separator space
+      element.append(document.createElement('p'))
+      // Title
+      let title = document.createElement('p')
+      title.innerText = I18n.t(NAME).title
+      element.append(title)
       // Text
       this.text = document.createElement('p')
-      div.append(this.text)
+      element.append(this.text)
       // Allow button
       // <wz-button color="shadowed" class="disallow-connections">Заборонити всі повороти</wz-button>
       this.allow = document.createElement('wz-button')
       this.allow.color = 'shadowed'
-      this.allow.innerHTML = I18n.t(NAME).allow_uturns
-      this.allow.onclick = () => this.switchNodeUturn(1)
-      div.append(this.allow)
+      this.allow.innerText = I18n.t(NAME).allow
+      this.allow.onclick = () => this.switchNodeUturn(ALLOW)
+      element.append(this.allow)
       // Separator space
-      div.append(document.createElement('p'))
+      element.append(document.createElement('p'))
       // Disallow button
       this.disallow = document.createElement('wz-button')
       this.disallow.color = 'shadowed'
-      this.disallow.innerHTML = I18n.t(NAME).disallow_uturns
-      this.disallow.onclick = () => this.switchNodeUturn(0)
-      div.append(this.disallow)
-      // Info bar
-      let info = document.createElement('p')
-      info.className = 'info-bar'
-      info.innerHTML = '<a href="' + GM_info.scriptUpdateURL + '">' + GM_info.script.name + '</a> ' + GM_info.script.version
-      div.append(info)
+      this.disallow.innerText = I18n.t(NAME).disallow
+      this.disallow.onclick = () => this.switchNodeUturn(DISALLOW)
+      element.append(this.disallow)
+    }
 
-      element.append(sl)
-      element.append(label)
-      element.append(div)
+    /**
+     * Update counter for the plugin tab
+     * @param {Object} counter
+     */
+    updateTabUI (counter) {
+      this.tab.html().querySelector('p.switch-uturns-counter').innerHTML = '' +
+        I18n.t(NAME).nodes + ': ' + counter.nodes + '<br/>' +
+        I18n.t(NAME).allowed + ': ' + counter.allowed + '<br/>' +
+        I18n.t(NAME).disallowed + ': ' + counter.disallowed
     }
 
     /**
@@ -147,7 +182,25 @@
     }
 
     /**
-     * @param node
+     * @return {{nodes: number, allowed: number, disallowed: number}}
+     */
+    countUturns () {
+      let counters = {
+        nodes: 0,
+        allowed: 0,
+        disallowed: 0
+      }
+      for (let node in W.model.nodes.objects) {
+        let counter = this.countNodeUturns(W.model.nodes.objects[node])
+        counters.nodes++
+        counters.allowed += counter.allowed
+        counters.disallowed += counter.disallowed
+      }
+      return counters
+    }
+
+    /**
+     * @param {Object} node
      * @return {{allowed: number, disallowed: number}}
      */
     countNodeUturns (node) {
@@ -174,7 +227,7 @@
 
     /**
      * Handler for selected node
-     * @param status
+     * @param {Number} status ALLOW or DISALLOW
      */
     switchNodeUturn (status) {
       let node = WME.getSelectedNode()
@@ -212,7 +265,7 @@
           continue;
         }
         let node = (direction === 'A') ? segment.getFromNode() : segment.getToNode()
-        let status = segment.isTurnAllowed(segment, node) ? 0 : 1
+        let status = segment.isTurnAllowed(segment, node) ? DISALLOW : ALLOW
         let turn = W.model.getTurnGraph().getTurnThroughNode(node, segment, segment)
         W.model.actionManager.add(
           new WazeActionSetTurn(
@@ -234,11 +287,11 @@
       let UTurnsInstance = new UTurns(NAME)
 
       // Hotkeys for node manipulation
-      WMEUI.addShortcut(NAME + '-node-allow', I18n.t(NAME).allow_uturns, NAME, I18n.t(NAME).title, 'A+A', () => UTurnsInstance.switchNodeUturn(1))
-      WMEUI.addShortcut(NAME + '-node-disallow', I18n.t(NAME).disallow_uturns, NAME, I18n.t(NAME).title, 'A+S', () => UTurnsInstance.switchNodeUturn(0))
+      WMEUI.addShortcut(NAME + '-node-allow', I18n.t(NAME).allow, NAME, I18n.t(NAME).title, 'A+A', () => UTurnsInstance.switchNodeUturn(1))
+      WMEUI.addShortcut(NAME + '-node-disallow', I18n.t(NAME).disallow, NAME, I18n.t(NAME).title, 'A+S', () => UTurnsInstance.switchNodeUturn(0))
       // Hotkeys for segment manipulation
-      WMEUI.addShortcut(NAME + '-segment-a', I18n.t(NAME).switch_uturn + ' A', NAME, I18n.t(NAME).title, 'A+Q', () => UTurnsInstance.switchSegmentUturn('A'))
-      WMEUI.addShortcut(NAME + '-segment-b', I18n.t(NAME).switch_uturn + ' B', NAME, I18n.t(NAME).title, 'A+W', () => UTurnsInstance.switchSegmentUturn('B'))
+      WMEUI.addShortcut(NAME + '-segment-a', I18n.t(NAME).switch + ' A', NAME, I18n.t(NAME).title, 'A+Q', () => UTurnsInstance.switchSegmentUturn('A'))
+      WMEUI.addShortcut(NAME + '-segment-b', I18n.t(NAME).switch + ' B', NAME, I18n.t(NAME).title, 'A+W', () => UTurnsInstance.switchSegmentUturn('B'))
       // Update count of UTurns on events
       W.model.actionManager.events.register('afterundoaction', null, () => UTurnsInstance.updateNodeUI())
       W.model.actionManager.events.register('afterclearactions', null, () => UTurnsInstance.updateNodeUI())
