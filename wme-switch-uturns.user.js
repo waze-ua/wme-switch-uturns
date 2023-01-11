@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         WME Switch Uturns
-// @version      2023.01.10.001
+// @version      2023.01.11.001
 // @description  Switches U-turns for selected node or segment. Forked and improved "WME Add Uturn from node" script.
 // @author       ixxvivxxi, uranik, turbopirate, AntonShevchuk
 // @namespace    https://greasyfork.org/users/160654-waze-ukraine
@@ -13,8 +13,8 @@
 // @grant        none
 // @require      https://greasyfork.org/scripts/450160-wme-bootstrap/code/WME-Bootstrap.js?version=1135567
 // @require      https://greasyfork.org/scripts/452563-wme/code/WME.js?version=1101598
-// @require      https://greasyfork.org/scripts/450221-wme-base/code/WME-Base.js?version=1129908
-// @require      https://greasyfork.org/scripts/450320-wme-ui/code/WME-UI.js?version=1137009
+// @require      https://greasyfork.org/scripts/450221-wme-base/code/WME-Base.js?version=1137043
+// @require      https://greasyfork.org/scripts/450320-wme-ui/code/WME-UI.js?version=1137289
 // ==/UserScript==
 
 /* jshint esversion: 8 */
@@ -156,10 +156,10 @@
         disallowed: 0
       }
 
-      let segmenstIds = node.getSegmentIds()
+      let segmentsIds = node.getSegmentIds()
 
-      for (let i = 0; i < segmenstIds.length; i++) {
-        let segment = W.model.segments.getObjectById(segmenstIds[i])
+      for (let i = 0; i < segmentsIds.length; i++) {
+        let segment = W.model.segments.getObjectById(segmentsIds[i])
         if (!segment) {
           continue
         }
@@ -181,12 +181,12 @@
       if (!node) {
         return
       }
-      let segmenstIds = node.getSegmentIds()
-      if (segmenstIds.length < 2) {
+      let segmentsIds = node.getSegmentIds()
+      if (segmentsIds.length < 2) {
         return
       }
-      for (let i = 0; i < segmenstIds.length; i++) {
-        let segment = W.model.segments.getObjectById(segmenstIds[i])
+      for (let i = 0; i < segmentsIds.length; i++) {
+        let segment = W.model.segments.getObjectById(segmentsIds[i])
         if (segment.isOneWay()) {
           continue;
         }
