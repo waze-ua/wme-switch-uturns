@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         WME Switch Uturns
-// @version      2023.02.23.001
+// @version      2023.02.24.001
 // @description  Switches U-turns for selected node or segment. Forked and improved "WME Add Uturn from node" script.
 // @author       ixxvivxxi, uranik, turbopirate, AntonShevchuk
 // @namespace    https://greasyfork.org/users/160654-waze-ukraine
@@ -165,7 +165,9 @@
       if (!node) {
         return
       }
-
+      if (node.getSegmentIds().length < 2) {
+        return
+      }
       let counter = this.countNodeUturns(node)
 
       // Change display properties of the buttons
