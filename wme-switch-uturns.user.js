@@ -35,7 +35,7 @@
   const TRANSLATION = {
     'en': {
       title: 'Switch U-Turns',
-      description: 'Choose a segment or a node to switch u-turns with <a href="#keyboard-dialog" target="_blank" rel="noopener noreferrer" data-toggle="modal">Keyboard shortcuts</a> or buttons',
+      description: 'Choose a segment or a node to switch U-turns with <strong>Keyboard shortcuts</strong> or buttons',
       count: 'Count nodes and U-Turns',
       switch: 'Switch U-turn at point',
       nodes: 'Nodes',
@@ -46,7 +46,7 @@
     },
     'uk': {
       title: 'Керування розворотами',
-      description: 'Оберіть сегмент або вузол щоб змінити розвороти за допомогою <a href="#keyboard-dialog" target="_blank" rel="noopener noreferrer" data-toggle="modal">гарячих клавіш</a> або кнопок',
+      description: 'Оберіть сегмент або вузол, щоб змінити розвороти за допомогою <strong>гарячих клавіш</strong> або кнопок',
       count: 'Порахувати вузли та розвороти',
       switch: 'Змінити розворот у вузлі',
       nodes: 'Вузли',
@@ -57,7 +57,7 @@
     },
     'ru': {
       title: 'Управление разворотами',
-      description: 'Выберите сегмент или узел для изменения разворотов с помощью <a href="#keyboard-dialog" target="_blank" rel="noopener noreferrer" data-toggle="modal">комбинаций клавиш</a> или кнопок',
+      description: 'Выберите сегмент или узел для изменения разворотов с помощью <strong>комбинаций клавиш</strong> или кнопок',
       count: 'Посчитать узлы и развороты',
       switch: 'Изменить разворот в узле',
       nodes: 'Узлы',
@@ -73,6 +73,7 @@
   const STYLE =
     'p.switch-uturns-counter { margin-top: 15px; padding-left: 15px; }' +
     'p.switch-uturns-info { border-top: 1px solid #ccc; color: #777; font-size: x-small; margin-top: 15px; padding-top: 10px; text-align: center; }' +
+    '#switch-uturns { padding: 16px; }' +
     '#sidebar p.switch-uturns-blue { background-color:#0057B8;color:white;height:32px;text-align:center;line-height:32px;font-size:24px;margin:0; }' +
     '#sidebar p.switch-uturns-yellow { background-color:#FFDD00;color:black;height:32px;text-align:center;line-height:32px;font-size:24px;margin:0; }'
 
@@ -88,6 +89,10 @@
       this.initHelper()
 
       this.initTab()
+
+      this.initShortcuts()
+
+      this.initHandlers()
     }
 
     initHelper() {
@@ -124,23 +129,74 @@
       this.tab.inject()
     }
 
+    initShortcuts () {
+      let shortcuts = [
+        // Hotkeys for node manipulation
+        {
+          callback: () => this.switchNodeUturn(true),
+          description: I18n.t(NAME).allow,
+          shortcutId: this.id + '-node-allow',
+          shortcutKeys: 'A+A',
+        },
+        {
+          callback: () => this.switchNodeUturn(false),
+          description: I18n.t(NAME).disallow,
+          shortcutId: this.id + '-node-disallow',
+          shortcutKeys: 'A+S',
+        },
+        // Hotkeys for segment manipulation
+        {
+          callback: () => this.switchSegmentUturn('A'),
+          description: I18n.t(NAME).switch + ' A',
+          shortcutId: this.id + '-segment-a',
+          shortcutKeys: 'A+Q',
+        },
+        {
+          callback: () => this.switchSegmentUturn('B'),
+          description: I18n.t(NAME).switch + ' B',
+          shortcutId: this.id + '-segment-b',
+          shortcutKeys: 'A+W',
+        },
+      ]
+
+      for (let i = 0; i < shortcuts.length; i++) {
+        let shortcut = shortcuts[i]
+
+        if (!this.wmeSDK.Shortcuts.areShortcutKeysInUse({ shortcutKeys: shortcut.shortcutKeys })) {
+          this.wmeSDK.Shortcuts.createShortcut(shortcut);
+        } else {
+          this.log('Shortcut already in use')
+        }
+      }
+    }
+
+    /**
+     * Update count of UTurns on events
+     */
+    initHandlers () {
+      this.wmeSDK.Events.on({
+        eventName: "wme-after-undo",
+        eventHandler: () => this.updateNodeUI(),
+      });
+      this.wmeSDK.Events.on({
+        eventName: "wme-after-redo-clear",
+        eventHandler: () => this.updateNodeUI(),
+      });
+    }
+
     /**
      * Handler for `node.wme` event
      * @param {jQuery.Event} event
      * @param {HTMLElement} element
-     * @param {W.model} model
+     * @param {Node$1} model
      * @return {void}
      */
     onNode (event, element, model) {
-      console.log(model)
-      console.log(element)
-
       if (model.connectedSegmentIds.length < 2 ) {
         return
       }
 
-
-      // this.removePanel(element)
+      this.removePanel(element)
       this.createPanel(element)
       this.updateNodeUI()
     }
@@ -167,6 +223,7 @@
       this.allow.color = 'shadowed'
       this.allow.innerText = I18n.t(NAME).allow
       this.allow.onclick = () => this.switchNodeUturn(ALLOW)
+      this.allow.style.marginBottom = '4px'
       container.append(this.allow)
       // Disallow button
       this.disallow = document.createElement('wz-button')
@@ -257,7 +314,7 @@
 
     /**
      * Handler for selected node
-     * @param {Number} status ALLOW or DISALLOW
+     * @param {Boolean} status ALLOW or DISALLOW
      */
     switchNodeUturn (status) {
       let node = this.getSelectedNode()
@@ -274,17 +331,22 @@
       turns = turns.filter( turn => turn.isUTurn )
       turns = turns.filter( turn => turn.isAllowed !== status )
       if (turns.length === 0) {
-        this.log('For the node ID=' + node.id + ' all u-turns are ' + (status ? 'ALLOW' : 'DISALLOW'))
+        this.log('Node ID=' + node.id + ': all u-turns are ' + (status ? 'ALLOW' : 'DISALLOW'))
       }
 
       for (let i = 0; i < turns.length; i++) {
         let turn = turns[i]
-        this.wmeSDK.DataModel.Turns.updateTurn({ turnId: turn.id, isAllowed: status })
+        if (this.wmeSDK.DataModel.Turns.getById({ turnId: turn.id })) {
+          this.wmeSDK.DataModel.Turns.updateTurn({ turnId: turn.id, isAllowed: status })
+          this.log('Turn ID=' + turn.id + ' switched to ' + (status ? 'ALLOW' : 'DISALLOW'))
+        } else {
+          this.log('Turn ID=' + turn.id + ' Not Found')
+        }
       }
 
       this.updateNodeUI()
 
-      this.log('For the node ID=' + node.id + ' ' + turns.length + ' u-turns have switched to ' + (status ? 'ALLOW' : 'DISALLOW'))
+      this.log('Node ID=' + node.id + ': ' + turns.length + ' u-turns have switched to ' + (status ? 'ALLOW' : 'DISALLOW'))
     }
 
     /**
@@ -304,7 +366,7 @@
           return
         }
 
-        let status = wmeSDK.DataModel.Turns.isTurnAllowed({ fromSegmentId: segment.id, nodeId: nodeId, toSegmentId: segment.id  })
+        let status = this.wmeSDK.DataModel.Turns.isTurnAllowed({ fromSegmentId: segment.id, nodeId: nodeId, toSegmentId: segment.id  })
 
         let turns = this.wmeSDK.DataModel.Turns.getTurnsThroughNode( { nodeId: nodeId } )
         turns = turns.filter( turn => turn.isUTurn )
@@ -317,30 +379,19 @@
         // it should be always only one turn, but who knows
         for (let i = 0; i < turns.length; i++) {
           let turn = turns[i]
-          this.wmeSDK.DataModel.Turns.updateTurn({ turnId: turn.id, isAllowed: !status })
+
+          if (this.wmeSDK.DataModel.Turns.getById({ turnId: turn.id })) {
+            this.wmeSDK.DataModel.Turns.updateTurn({ turnId: turn.id, isAllowed: !status })
+          }
         }
 
-        this.log('u-turn in the point ' + direction + ' switched to ' + (status ? 'ALLOW' : 'DISALLOW'))
+        this.log('U-turn in the point ' + direction + ' switched to ' + (status ? 'ALLOW' : 'DISALLOW'))
       }
     }
   }
 
   $(document)
     .on('bootstrap.wme', () => {
-      let UTurnsInstance = new UTurns(NAME)
-
-      /*
-      // Hotkeys for node manipulation
-      WMEUI.addShortcut(NAME + '-node-allow', I18n.t(NAME).allow, NAME, I18n.t(NAME).title, 'A+A', () => UTurnsInstance.switchNodeUturn(1))
-      WMEUI.addShortcut(NAME + '-node-disallow', I18n.t(NAME).disallow, NAME, I18n.t(NAME).title, 'A+S', () => UTurnsInstance.switchNodeUturn(0))
-      // Hotkeys for segment manipulation
-      WMEUI.addShortcut(NAME + '-segment-a', I18n.t(NAME).switch + ' A', NAME, I18n.t(NAME).title, 'A+Q', () => UTurnsInstance.switchSegmentUturn('A'))
-      WMEUI.addShortcut(NAME + '-segment-b', I18n.t(NAME).switch + ' B', NAME, I18n.t(NAME).title, 'A+W', () => UTurnsInstance.switchSegmentUturn('B'))
-      // Update count of UTurns on events
-      W.model.actionManager.events.register('afterundoaction', null, () => UTurnsInstance.updateNodeUI())
-      W.model.actionManager.events.register('afterclearactions', null, () => UTurnsInstance.updateNodeUI())
-      W.model.actionManager.events.register('afteraction', null, () => UTurnsInstance.updateNodeUI())
-
-       */
+      new UTurns(NAME)
     })
 })()
