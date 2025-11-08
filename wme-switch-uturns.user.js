@@ -2,8 +2,10 @@
 // @name         WME Switch Uturns
 // @name:uk      WME 🇺🇦 Switch Uturns
 // @name:ru      WME 🇺🇦 Switch Uturns
-// @version      2025.11.05.001
-// @description  Switches U-turns for selected node or segment. Forked and improved "WME Add Uturn from node" script.
+// @version      2025.11.08.001
+// @description  Switches U-turns for selected node or segment.
+// @description:uk Перемикач розворотів для обраної точки або сегменту.
+// @description:ru Переключатель разворотов для выбранной точки или сегмента.
 // @author       ixxvivxxi, uranik, turbopirate, AntonShevchuk
 // @namespace    https://greasyfork.org/users/160654-waze-ukraine
 // @updateURL    https://greasyfork.org/scripts/457553-wme-switch-uturns
