@@ -1,0 +1,8 @@
+{
+  "name": "wme-switch-uturns",
+  "devDependencies": {
+    "@types/jquery": "^3.5.33",
+    "@types/tampermonkey": "^5.0.5",
+    "wme-sdk-typings": "https://web-assets.waze.com/wme_sdk_docs/production/latest/wme-sdk-typings.tgz"
+  }
+}

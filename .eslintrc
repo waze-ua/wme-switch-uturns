@@ -1,0 +1,16 @@
+{
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaVersion": 8
+    },
+    "env": {
+        "browser": true
+    },
+    "rules": {
+        "semi": "warn",
+        "quotes": ["warn", "single"],
+        "no-trailing-spaces": "warn",
+        "no-undef": "off",
+        "no-extra-boolean-cast": "off"
+    }
+}
