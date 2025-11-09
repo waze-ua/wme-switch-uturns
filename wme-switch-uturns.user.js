@@ -2,7 +2,7 @@
 // @name         WME Switch Uturns
 // @name:uk      WME 🇺🇦 Switch Uturns
 // @name:ru      WME 🇺🇦 Switch Uturns
-// @version      2025.11.08.001
+// @version      2025.11.10.001
 // @description  Switches U-turns for selected node or segment.
 // @description:uk Перемикач розворотів для обраної точки або сегменту.
 // @description:ru Переключатель разворотов для выбранной точки или сегмента.
@@ -31,7 +31,7 @@
   'use strict'
 
   // Script name, uses as unique index
-  const NAME = 'SWITCH-UTURNS'
+  const NAME = 'Switch U-turns'
 
   // Translations
   const TRANSLATION = {
@@ -73,11 +73,11 @@
   WMEUI.addTranslation(NAME, TRANSLATION)
 
   const STYLE =
-    'p.switch-uturns-counter { margin-top: 15px; padding-left: 15px; }' +
-    'p.switch-uturns-info { border-top: 1px solid #ccc; color: #777; font-size: x-small; margin-top: 15px; padding-top: 10px; text-align: center; }' +
-    '#switch-uturns { padding: 16px; }' +
-    '#sidebar p.switch-uturns-blue { background-color:#0057B8;color:white;height:32px;text-align:center;line-height:32px;font-size:24px;margin:0; }' +
-    '#sidebar p.switch-uturns-yellow { background-color:#FFDD00;color:black;height:32px;text-align:center;line-height:32px;font-size:24px;margin:0; }'
+    'p.switch-u-turns-counter { margin-top: 15px; padding-left: 15px; }' +
+    'p.switch-u-turns-info { border-top: 1px solid #ccc; color: #777; font-size: x-small; margin-top: 15px; padding-top: 10px; text-align: center; }' +
+    '#switch-u-turns { padding: 16px; }' +
+    '#sidebar p.switch-u-turns-blue { background-color:#0057B8;color:white;height:32px;text-align:center;line-height:32px;font-size:24px;margin:0; }' +
+    '#sidebar p.switch-u-turns-yellow { background-color:#FFDD00;color:black;height:32px;text-align:center;line-height:32px;font-size:24px;margin:0; }'
 
   WMEUI.addStyle(STYLE)
 
@@ -164,11 +164,11 @@
       for (let i = 0; i < shortcuts.length; i++) {
         let shortcut = shortcuts[i]
 
-        if (!this.wmeSDK.Shortcuts.areShortcutKeysInUse({ shortcutKeys: shortcut.shortcutKeys })) {
-          this.wmeSDK.Shortcuts.createShortcut(shortcut);
-        } else {
+        if (this.wmeSDK.Shortcuts.areShortcutKeysInUse({ shortcutKeys: shortcut.shortcutKeys })) {
           this.log('Shortcut already in use')
+          shortcut.shortcutKeys = null
         }
+        this.wmeSDK.Shortcuts.createShortcut(shortcut);
       }
     }
 
