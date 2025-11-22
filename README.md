@@ -1,9 +1,9 @@
-# Switch U-Turns
+# WME 🇺🇦 Switch U-Turns
 Adds/removes u-turns from node
 
-![](screenshot.png)
+![Switch U-Turns Controls](screenshot.png)
 
-![](settings.png)
+![Switch U-Turns Counter](settings.png)
 
 ## Shortcuts
 
