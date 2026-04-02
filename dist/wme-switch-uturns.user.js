@@ -208,7 +208,7 @@
          */
         updateNodeUI() {
             let node = this.getSelectedNode();
-            if (!node) {
+            if (!node || !this.allow || !this.disallow) {
                 return;
             }
             let counter = this.countNodeUturns(node);
@@ -293,7 +293,7 @@
                 }
                 let nodeId = (direction === 'A') ? segment.fromNodeId : segment.toNodeId;
                 if (!this.wmeSDK.DataModel.Turns.canEditTurnsThroughNode({ nodeId: nodeId })) {
-                    return;
+                    continue;
                 }
                 let status = this.wmeSDK.DataModel.Turns.isTurnAllowed({ fromSegmentId: segment.id, nodeId: nodeId, toSegmentId: segment.id });
                 let turns = this.wmeSDK.DataModel.Turns.getTurnsThroughNode({ nodeId: nodeId });
@@ -309,7 +309,7 @@
                         this.wmeSDK.DataModel.Turns.updateTurn({ turnId: turn.id, isAllowed: !status });
                     }
                 }
-                this.log('U-turn in the point ' + direction + ' switched to ' + (status ? 'ALLOW' : 'DISALLOW'));
+                this.log('U-turn in the point ' + direction + ' switched to ' + (!status ? 'ALLOW' : 'DISALLOW'));
             }
         }
     }
