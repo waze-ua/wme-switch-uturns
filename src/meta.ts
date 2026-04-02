@@ -3,7 +3,7 @@
 // @name:uk      WME 🇺🇦 Switch Uturns
 // @name:ru      WME 🇺🇦 Switch Uturns
 // @version      {{version}}
-// @description  Switches U-turns for selected node or segment.
+// @description  Switches U-turns for a selected node or segment.
 // @description:uk Перемикач розворотів для обраної точки або сегменту.
 // @description:ru Переключатель разворотов для выбранной точки или сегмента.
 // @author       ixxvivxxi, uranik, turbopirate, AntonShevchuk

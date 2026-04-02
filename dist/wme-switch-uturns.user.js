@@ -2,7 +2,7 @@
 // @name         WME Switch Uturns
 // @name:uk      WME 🇺🇦 Switch Uturns
 // @name:ru      WME 🇺🇦 Switch Uturns
-// @version      2025.11.29.001
+// @version      2026.04.02.001
 // @description  Switches U-turns for selected node or segment.
 // @description:uk Перемикач розворотів для обраної точки або сегменту.
 // @description:ru Переключатель разворотов для выбранной точки или сегмента.
