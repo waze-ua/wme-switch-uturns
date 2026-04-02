@@ -1,4 +1,4 @@
-# WME 🇺🇦 Switch U-Turns
+# WME Switch U-Turns
 Adds/removes u-turns from node
 
 ![Switch U-Turns Controls](screenshot.png)
@@ -29,6 +29,14 @@ Adds/removes u-turns from node
 <td align='center'>Switch U-turn for the point <strong>B</strong> of the selected segment</td>
 </tr>
 </table>
+
+## Development
+
+```bash
+npm install
+npm run build
+npm run watch
+```
 
 ## Links
 
