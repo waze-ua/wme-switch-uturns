@@ -171,7 +171,7 @@ export class UTurns extends WMEBase {
    * Update counter for the plugin tab
    */
   updateTabUI (counter: any) {
-    this.tab.html().querySelector('p.switch-uturns-counter').innerHTML = '' +
+    this.tab.html().querySelector('p.switch-u-turns-counter').innerHTML = '' +
       I18n.t(NAME).nodes + ': ' + counter.nodes + '<br/>' +
       I18n.t(NAME).allowed + ': ' + counter.allowed + '<br/>' +
       I18n.t(NAME).disallowed + ': ' + counter.disallowed

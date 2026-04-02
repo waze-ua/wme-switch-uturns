@@ -3,7 +3,7 @@
 // @name:uk      WME 🇺🇦 Switch Uturns
 // @name:ru      WME 🇺🇦 Switch Uturns
 // @version      2026.04.02.001
-// @description  Switches U-turns for selected node or segment.
+// @description  Switches U-turns for a selected node or segment.
 // @description:uk Перемикач розворотів для обраної точки або сегменту.
 // @description:ru Переключатель разворотов для выбранной точки или сегмента.
 // @author       ixxvivxxi, uranik, turbopirate, AntonShevchuk
@@ -198,7 +198,7 @@
          * Update counter for the plugin tab
          */
         updateTabUI(counter) {
-            this.tab.html().querySelector('p.switch-uturns-counter').innerHTML = '' +
+            this.tab.html().querySelector('p.switch-u-turns-counter').innerHTML = '' +
                 I18n.t(NAME).nodes + ': ' + counter.nodes + '<br/>' +
                 I18n.t(NAME).allowed + ': ' + counter.allowed + '<br/>' +
                 I18n.t(NAME).disallowed + ': ' + counter.disallowed;
@@ -314,7 +314,7 @@
         }
     }
 
-    var css_248z = "p.switch-u-turns-counter {\n  margin-top: 15px;\n  padding-left: 15px;\n}\n\np.switch-u-turns-info {\n  border-top: 1px solid #ccc;\n  color: #777;\n  font-size: x-small;\n  margin-top: 15px;\n  padding-top: 10px;\n  text-align: center;\n}\n\n#switch-u-turns {\n  padding: 16px;\n}\n\n#sidebar p.switch-u-turns-blue {\n  background-color: #0057B8;\n  color: white;\n  height: 32px;\n  text-align: center;\n  line-height: 32px;\n  font-size: 24px;\n  margin: 0;\n}\n\n#sidebar p.switch-u-turns-yellow {\n  background-color: #FFDD00;\n  color: black;\n  height: 32px;\n  text-align: center;\n  line-height: 32px;\n  font-size: 24px;\n  margin: 0;\n}\n";
+    var css_248z = ".switch-u-turns .button-toolbar {\n  padding: 8px;\n}\np.switch-u-turns-counter {\n  margin-top: 15px;\n  padding-left: 15px;\n}\np.switch-u-turns-info {\n  border-top: 1px solid #ccc;\n  color: #777;\n  font-size: x-small;\n  margin-top: 15px;\n  padding-top: 10px;\n  text-align: center;\n}\n\n#switch-u-turns {\n  padding: 16px;\n}\n\n#sidebar p.switch-u-turns-blue {\n  background-color: #0057B8;\n  color: white;\n  height: 32px;\n  text-align: center;\n  line-height: 32px;\n  font-size: 24px;\n  margin: 0;\n}\n\n#sidebar p.switch-u-turns-yellow {\n  background-color: #FFDD00;\n  color: black;\n  height: 32px;\n  text-align: center;\n  line-height: 32px;\n  font-size: 24px;\n  margin: 0;\n}\n";
 
     WMEUI.addTranslation(NAME, TRANSLATION);
     WMEUI.addStyle(css_248z);
