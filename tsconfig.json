@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": false,
+    "esModuleInterop": true,
+    "declaration": false,
+    "sourceMap": false,
+    "outDir": "dist",
+    "rootDir": "src",
+    "types": ["tampermonkey", "jquery"],
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/meta.ts"]
+}
