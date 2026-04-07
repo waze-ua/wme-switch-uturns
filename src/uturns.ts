@@ -1,4 +1,5 @@
 import { NAME } from './translations'
+import type { Segment, Turn } from 'wme-sdk-typings'
 
 const ALLOW = true
 const DISALLOW = false
@@ -71,7 +72,7 @@ export class UTurns extends WMEBase {
   /**
    * Handler for `node.wme` event
    */
-  onNode (event: any, element: HTMLElement, node: any) {
+  onNode (event: JQuery.Event, element: HTMLElement, node: WMENode) {
     if (node.connectedSegmentIds.length < 2 ) {
       return
     }
@@ -184,13 +185,13 @@ export class UTurns extends WMEBase {
    * @param {Object} node
    * @return {{allowed: number, disallowed: number}}
    */
-  countNodeUturns (node: any) {
-    let turns = this.wmeSDK.DataModel.Turns.getTurnsThroughNode( { nodeId: node.id } )
-    turns = turns.filter( (turn: any) => turn.isUTurn )
+  countNodeUturns (node: WMENode) {
+    let turns: Turn[] = this.wmeSDK.DataModel.Turns.getTurnsThroughNode( { nodeId: node.id } )
+    turns = turns.filter( (turn: Turn) => turn.isUTurn )
 
     return  {
-      allowed: turns.filter( (turn: any) => turn.isAllowed ).length,
-      disallowed: turns.filter( (turn: any) => !turn.isAllowed ).length
+      allowed: turns.filter( (turn: Turn) => turn.isAllowed ).length,
+      disallowed: turns.filter( (turn: Turn) => !turn.isAllowed ).length
     }
   }
 
@@ -208,9 +209,9 @@ export class UTurns extends WMEBase {
       return
     }
 
-    let turns = this.wmeSDK.DataModel.Turns.getTurnsThroughNode( { nodeId: node.id } )
-    turns = turns.filter( (turn: any) => turn.isUTurn )
-    turns = turns.filter( (turn: any) => turn.isAllowed !== status )
+    let turns: Turn[] = this.wmeSDK.DataModel.Turns.getTurnsThroughNode( { nodeId: node.id } )
+    turns = turns.filter( (turn: Turn) => turn.isUTurn )
+    turns = turns.filter( (turn: Turn) => turn.isAllowed !== status )
     if (turns.length === 0) {
       this.log('Node ID=' + node.id + ': all u-turns are ' + (status ? 'ALLOW' : 'DISALLOW'))
     }
@@ -234,9 +235,9 @@ export class UTurns extends WMEBase {
    * Handler for selected segments
    */
   switchSegmentUturn (direction: string = 'A') {
-    let segments = this.getSelectedSegments()
+    let segments: Segment[] = this.getSelectedSegments()
     for (let i = 0, total = segments.length; i < total; i++) {
-      let segment = segments[i]
+      let segment: Segment = segments[i]
       if (!segment.isTwoWay) {
         continue;
       }
@@ -248,9 +249,9 @@ export class UTurns extends WMEBase {
 
       let status = this.wmeSDK.DataModel.Turns.isTurnAllowed({ fromSegmentId: segment.id, nodeId: nodeId, toSegmentId: segment.id })
 
-      let turns = this.wmeSDK.DataModel.Turns.getTurnsThroughNode( { nodeId: nodeId } )
-      turns = turns.filter( (turn: any) => turn.isUTurn )
-      turns = turns.filter( (turn: any) => turn.fromSegmentId === segment.id && turn.toSegmentId === segment.id )
+      let turns: Turn[] = this.wmeSDK.DataModel.Turns.getTurnsThroughNode( { nodeId: nodeId } )
+      turns = turns.filter( (turn: Turn) => turn.isUTurn )
+      turns = turns.filter( (turn: Turn) => turn.fromSegmentId === segment.id && turn.toSegmentId === segment.id )
 
       if (turns.length === 0) {
         continue
