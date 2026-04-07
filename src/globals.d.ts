@@ -1,5 +1,7 @@
 /// <reference types="wme-sdk-typings" />
 
+import type { Node as WMENode } from "wme-sdk-typings"
+
 // =============================================================================
 // WME-Base
 // =============================================================================
@@ -30,8 +32,8 @@ declare class WMEBase {
   onNone(event: JQuery.Event): void
   onSegment(event: JQuery.Event, element: HTMLElement, model: any): void
   onSegments(event: JQuery.Event, element: HTMLElement, models: any[]): void
-  onNode(event: JQuery.Event, element: HTMLElement, model: any): void
-  onNodes(event: JQuery.Event, element: HTMLElement, models: any[]): void
+  onNode(event: JQuery.Event, element: HTMLElement, model: WMENode): void
+  onNodes(event: JQuery.Event, element: HTMLElement, models: WMENode[]): void
   onVenue(event: JQuery.Event, element: HTMLElement, model: any): void
   onVenues(event: JQuery.Event, element: HTMLElement, models: any[]): void
   onPlace(event: JQuery.Event, element: HTMLElement, model: any): void
@@ -54,9 +56,9 @@ declare class WMEBase {
   getSelectedSegmentAddress(): any
 
   // Nodes
-  getAllNodes(except?: number[]): any[]
-  getSelectedNode(): any
-  getSelectedNodes(): any[]
+  getAllNodes(except?: number[]): WMENode[]
+  getSelectedNode(): WMENode | null
+  getSelectedNodes(): WMENode[]
 }
 
 // =============================================================================
