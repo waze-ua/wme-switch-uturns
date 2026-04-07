@@ -68,13 +68,9 @@
     class UTurns extends WMEBase {
         constructor(name, settings = null) {
             super(name, settings);
-            this.initHelper();
             this.initTab();
             this.initShortcuts();
             this.initHandlers();
-        }
-        initHelper() {
-            this.helper = new WMEUIHelper(this.name);
         }
         initTab() {
             this.tab = this.helper.createTab(I18n.t(this.name).title, {
@@ -91,42 +87,10 @@
             this.tab.inject();
         }
         initShortcuts() {
-            let shortcuts = [
-                // Hotkeys for node manipulation
-                {
-                    callback: () => this.switchNodeUturn(true),
-                    description: I18n.t(NAME).allow,
-                    shortcutId: this.id + '-node-allow',
-                    shortcutKeys: 'A+A',
-                },
-                {
-                    callback: () => this.switchNodeUturn(false),
-                    description: I18n.t(NAME).disallow,
-                    shortcutId: this.id + '-node-disallow',
-                    shortcutKeys: 'A+S',
-                },
-                // Hotkeys for segment manipulation
-                {
-                    callback: () => this.switchSegmentUturn('A'),
-                    description: I18n.t(NAME).switch + ' A',
-                    shortcutId: this.id + '-segment-a',
-                    shortcutKeys: 'A+Q',
-                },
-                {
-                    callback: () => this.switchSegmentUturn('B'),
-                    description: I18n.t(NAME).switch + ' B',
-                    shortcutId: this.id + '-segment-b',
-                    shortcutKeys: 'A+W',
-                },
-            ];
-            for (let i = 0; i < shortcuts.length; i++) {
-                let shortcut = shortcuts[i];
-                if (this.wmeSDK.Shortcuts.areShortcutKeysInUse({ shortcutKeys: shortcut.shortcutKeys })) {
-                    this.log('Shortcut already in use');
-                    shortcut.shortcutKeys = null;
-                }
-                this.wmeSDK.Shortcuts.createShortcut(shortcut);
-            }
+            this.createShortcut('node-allow', I18n.t(NAME).allow, 'A+A', () => this.switchNodeUturn(true));
+            this.createShortcut('node-disallow', I18n.t(NAME).disallow, 'A+S', () => this.switchNodeUturn(false));
+            this.createShortcut('segment-a', I18n.t(NAME).switch + ' A', 'A+Q', () => this.switchSegmentUturn('A'));
+            this.createShortcut('segment-b', I18n.t(NAME).switch + ' B', 'A+W', () => this.switchSegmentUturn('B'));
         }
         /**
          * Update count of UTurns on events
