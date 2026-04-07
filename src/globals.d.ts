@@ -27,16 +27,16 @@ declare class WMEBase {
   canEditVenue(model: any): boolean
 
   // Event handlers (override in subclass)
-  onNone(event: any): void
-  onSegment(event: any, element: HTMLElement, model: any): void
-  onSegments(event: any, element: HTMLElement, models: any[]): void
-  onNode(event: any, element: HTMLElement, model: any): void
-  onNodes(event: any, element: HTMLElement, models: any[]): void
-  onVenue(event: any, element: HTMLElement, model: any): void
-  onVenues(event: any, element: HTMLElement, models: any[]): void
-  onPlace(event: any, element: HTMLElement, model: any): void
-  onPoint(event: any, element: HTMLElement, model: any): void
-  onResidential(event: any, element: HTMLElement, model: any): void
+  onNone(event: JQuery.Event): void
+  onSegment(event: JQuery.Event, element: HTMLElement, model: any): void
+  onSegments(event: JQuery.Event, element: HTMLElement, models: any[]): void
+  onNode(event: JQuery.Event, element: HTMLElement, model: any): void
+  onNodes(event: JQuery.Event, element: HTMLElement, models: any[]): void
+  onVenue(event: JQuery.Event, element: HTMLElement, model: any): void
+  onVenues(event: JQuery.Event, element: HTMLElement, models: any[]): void
+  onPlace(event: JQuery.Event, element: HTMLElement, model: any): void
+  onPoint(event: JQuery.Event, element: HTMLElement, model: any): void
+  onResidential(event: JQuery.Event, element: HTMLElement, model: any): void
 
   // Selection
   getSelection(): any
