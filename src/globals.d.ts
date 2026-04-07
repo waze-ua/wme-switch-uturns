@@ -30,35 +30,35 @@ declare class WMEBase {
   createShortcut(id: string, description: string, keys: string | null, callback: Function): void
 
   // Permissions
-  canEditSegment(model: any): boolean
-  canEditVenue(model: any): boolean
+  canEditSegment(model: Segment): boolean
+  canEditVenue(model: Venue): boolean
 
   // Event handlers (override in subclass)
   onNone(event: JQuery.Event): void
-  onSegment(event: JQuery.Event, element: HTMLElement, model: any): void
-  onSegments(event: JQuery.Event, element: HTMLElement, models: any[]): void
+  onSegment(event: JQuery.Event, element: HTMLElement, model: Segment): void
+  onSegments(event: JQuery.Event, element: HTMLElement, models: Segment[]): void
   onNode(event: JQuery.Event, element: HTMLElement, model: WMENode): void
   onNodes(event: JQuery.Event, element: HTMLElement, models: WMENode[]): void
-  onVenue(event: JQuery.Event, element: HTMLElement, model: any): void
-  onVenues(event: JQuery.Event, element: HTMLElement, models: any[]): void
-  onPlace(event: JQuery.Event, element: HTMLElement, model: any): void
-  onPoint(event: JQuery.Event, element: HTMLElement, model: any): void
-  onResidential(event: JQuery.Event, element: HTMLElement, model: any): void
+  onVenue(event: JQuery.Event, element: HTMLElement, model: Venue): void
+  onVenues(event: JQuery.Event, element: HTMLElement, models: Venue[]): void
+  onPlace(event: JQuery.Event, element: HTMLElement, model: Venue): void
+  onPoint(event: JQuery.Event, element: HTMLElement, model: Venue): void
+  onResidential(event: JQuery.Event, element: HTMLElement, model: Venue): void
 
   // Selection
   getSelection(): any
 
   // Venues
-  getAllVenues(except?: string[]): any[]
-  getSelectedVenue(): any
-  getSelectedVenues(): any[]
-  getSelectedVenueAddress(): any
+  getAllVenues(except?: string[]): Venue[]
+  getSelectedVenue(): Venue | null
+  getSelectedVenues(): Venue[]
+  getSelectedVenueAddress(): VenueAddress | null
 
   // Segments
-  getAllSegments(except?: number[]): any[]
-  getSelectedSegment(): any
-  getSelectedSegments(): any[]
-  getSelectedSegmentAddress(): any
+  getAllSegments(except?: number[]): Segment[]
+  getSelectedSegment(): Segment | null
+  getSelectedSegments(): Segment[]
+  getSelectedSegmentAddress(): SegmentAddress | null
 
   // Nodes
   getAllNodes(except?: number[]): WMENode[]
