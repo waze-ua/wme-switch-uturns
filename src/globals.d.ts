@@ -1,6 +1,11 @@
 /// <reference types="wme-sdk-typings" />
+// WME Node type (aliased to avoid DOM Node conflict)
+interface WMENode {
+  connectedSegmentIds: number[]
+  geometry: any
+  id: number
+}
 
-import type { Node as WMENode } from "wme-sdk-typings"
 
 // =============================================================================
 // WME-Base
