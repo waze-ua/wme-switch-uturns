@@ -5,10 +5,17 @@ declare class WMEBase {
   name: string
   wmeSDK: any
   settings: any
+  helper: WMEUIHelper
 
   log(message: string, ...args: any[]): void
+  warn(message: string, ...args: any[]): void
+  error(message: string, ...args: any[]): void
   group(message: string, ...args: any[]): void
   groupEnd(): void
+
+  createShortcut(id: string, description: string, keys: string | null, callback: Function): void
+  canEditSegment(model: any): boolean
+  canEditVenue(model: any): boolean
 
   onNone(event: any): void
   onSegment(event: any, element: HTMLElement, model: any): void
@@ -21,6 +28,7 @@ declare class WMEBase {
   onPoint(event: any, element: HTMLElement, model: any): void
   onResidential(event: any, element: HTMLElement, model: any): void
 
+  getSelection(): any
   getAllVenues(except?: string[]): any[]
   getSelectedVenue(): any
   getSelectedVenues(): any[]
@@ -29,12 +37,12 @@ declare class WMEBase {
   getAllSegments(except?: number[]): any[]
   getSelectedSegment(): any
   getSelectedSegments(): any[]
+  getSelectedSegmentAddress(): any
 
-  getAllNodes(except?: any[]): any[]
+  getAllNodes(except?: number[]): any[]
   getSelectedNode(): any
   getSelectedNodes(): any[]
 }
-
 // WME-UI types
 declare class WMEUI {
   static normalize(str: string): string
