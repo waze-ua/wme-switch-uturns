@@ -35,13 +35,13 @@ export class UTurns extends WMEBase {
       }
     )
     this.tab.addText('description', I18n.t(this.name).description)
-    let button = this.tab.addButton(
+    this.tab.addButton(
       this.name,
       I18n.t(this.name).count,
       '',
-      () => this.updateTabUI(this.countUturns())
+      () => this.updateTabUI(this.countUturns()),
+      { className: 'waze-btn waze-btn-small waze-btn-white waze-btn-blue' }
     )
-    button.html().className += ' waze-btn-blue'
 
     this.tab.addText('counter', '')
     this.tab.addText(

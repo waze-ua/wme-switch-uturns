@@ -82,8 +82,7 @@
                 image: GM_info.script.icon
             });
             this.tab.addText('description', I18n.t(this.name).description);
-            let button = this.tab.addButton(this.name, I18n.t(this.name).count, '', () => this.updateTabUI(this.countUturns()));
-            button.html().className += ' waze-btn-blue';
+            this.tab.addButton(this.name, I18n.t(this.name).count, '', () => this.updateTabUI(this.countUturns()), { className: 'waze-btn waze-btn-small waze-btn-white waze-btn-blue' });
             this.tab.addText('counter', '');
             this.tab.addText('info', '<a href="' + GM_info.scriptUpdateURL + '">' + GM_info.script.name + '</a> ' + GM_info.script.version);
             this.tab.addText('blue', 'made in');
