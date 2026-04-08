@@ -73,12 +73,12 @@
             this.initHandlers();
         }
         initTab() {
-            this.tab = this.helper.createTab(I18n.t(this.name).title, {
+            this.tab = this.helper.createTab(WMEUI.t(NAME).title, {
                 sidebar: this.wmeSDK.Sidebar,
                 image: GM_info.script.icon
             });
-            this.tab.addText('description', I18n.t(this.name).description);
-            this.tab.addButton(this.name, I18n.t(this.name).count, '', () => this.updateTabUI(this.countUturns()), { className: 'waze-btn waze-btn-small waze-btn-white waze-btn-blue' });
+            this.tab.addText('description', WMEUI.t(NAME).description);
+            this.tab.addButton(this.name, WMEUI.t(NAME).count, '', () => this.updateTabUI(this.countUturns()), { className: 'waze-btn waze-btn-small waze-btn-white waze-btn-blue' });
             this.tab.addText('counter', '');
             this.tab.addText('info', '<a href="' + GM_info.scriptUpdateURL + '">' + GM_info.script.name + '</a> ' + GM_info.script.version);
             this.tab.addText('blue', 'made in');
@@ -87,10 +87,10 @@
             this.tab.inject();
         }
         initShortcuts() {
-            this.createShortcut('node-allow', I18n.t(NAME).allow, 'A+A', () => this.switchNodeUturn(true));
-            this.createShortcut('node-disallow', I18n.t(NAME).disallow, 'A+S', () => this.switchNodeUturn(false));
-            this.createShortcut('segment-a', I18n.t(NAME).switch + ' A', 'A+Q', () => this.switchSegmentUturn('A'));
-            this.createShortcut('segment-b', I18n.t(NAME).switch + ' B', 'A+W', () => this.switchSegmentUturn('B'));
+            this.createShortcut('node-allow', WMEUI.t(NAME).allow, 'A+A', () => this.switchNodeUturn(true));
+            this.createShortcut('node-disallow', WMEUI.t(NAME).disallow, 'A+S', () => this.switchNodeUturn(false));
+            this.createShortcut('segment-a', WMEUI.t(NAME).switch + ' A', 'A+Q', () => this.switchSegmentUturn('A'));
+            this.createShortcut('segment-b', WMEUI.t(NAME).switch + ' B', 'A+W', () => this.switchSegmentUturn('B'));
         }
         /**
          * Update count of UTurns on events
@@ -131,7 +131,7 @@
             container.append(document.createElement('hr'));
             // Title
             let title = document.createElement('p');
-            title.innerText = I18n.t(NAME).title;
+            title.innerText = WMEUI.t(NAME).title;
             container.append(title);
             // Text
             this.text = document.createElement('p');
@@ -139,14 +139,14 @@
             // Allow button
             this.allow = document.createElement('wz-button');
             this.allow.color = 'shadowed';
-            this.allow.innerText = I18n.t(NAME).allow;
+            this.allow.innerText = WMEUI.t(NAME).allow;
             this.allow.onclick = () => this.switchNodeUturn(ALLOW);
             this.allow.style.marginBottom = '4px';
             container.append(this.allow);
             // Disallow button
             this.disallow = document.createElement('wz-button');
             this.disallow.color = 'shadowed';
-            this.disallow.innerText = I18n.t(NAME).disallow;
+            this.disallow.innerText = WMEUI.t(NAME).disallow;
             this.disallow.onclick = () => this.switchNodeUturn(DISALLOW);
             container.append(this.disallow);
             element.parentNode.append(container);
@@ -162,9 +162,9 @@
          */
         updateTabUI(counter) {
             this.tab.html().querySelector('p.switch-u-turns-counter').innerHTML = '' +
-                I18n.t(NAME).nodes + ': ' + counter.nodes + '<br/>' +
-                I18n.t(NAME).allowed + ': ' + counter.allowed + '<br/>' +
-                I18n.t(NAME).disallowed + ': ' + counter.disallowed;
+                WMEUI.t(NAME).nodes + ': ' + counter.nodes + '<br/>' +
+                WMEUI.t(NAME).allowed + ': ' + counter.allowed + '<br/>' +
+                WMEUI.t(NAME).disallowed + ': ' + counter.disallowed;
         }
         /**
          * Updated buttons status and counters
@@ -180,8 +180,8 @@
             this.disallow.style.display = counter.allowed ? 'flex' : 'none';
             // Change text
             this.text.innerHTML =
-                I18n.t(NAME).allowed + ': ' + counter.allowed + '<br/>' +
-                    I18n.t(NAME).disallowed + ': ' + counter.disallowed;
+                WMEUI.t(NAME).allowed + ': ' + counter.allowed + '<br/>' +
+                    WMEUI.t(NAME).disallowed + ': ' + counter.disallowed;
         }
         /**
          * @return {{nodes: number, allowed: number, disallowed: number}}
