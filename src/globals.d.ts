@@ -73,7 +73,9 @@ declare class WMEBase {
 declare class WMEUI {
   static normalize(str: string): string
   static addStyle(css: string): void
-  static addTranslation(uid: string, data: any): void
+  static addTranslation(uid: string, data: Record<string, any>): void
+  static t(uid: string): any
+  static getLocale(): string
 }
 
 declare class WMEUIHelper {
