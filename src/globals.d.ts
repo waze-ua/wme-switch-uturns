@@ -98,6 +98,7 @@ declare class WMEUIHelperElement {
   element: HTMLElement | null
   elements: WMEUIHelperElement[]
 
+  remove(): void
   addElement(element: WMEUIHelperElement): WMEUIHelperElement
   removeElement(element: WMEUIHelperElement): void
   getChildContainer(): HTMLElement | null
