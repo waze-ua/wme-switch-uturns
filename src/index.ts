@@ -3,9 +3,13 @@ import { TRANSLATION } from './translations'
 import { UTurns } from './uturns'
 import css from './style.css'
 
+const SETTINGS = {
+  layer: false,
+}
+
 $(document).on('bootstrap.wme', () => {
   WMEUI.addTranslation(NAME, TRANSLATION)
   WMEUI.addStyle(css)
 
-  new UTurns(NAME)
+  new UTurns(NAME, SETTINGS)
 })

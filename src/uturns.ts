@@ -35,7 +35,7 @@ export class UTurns extends WMEBase {
   constructor (name: string, settings: any = null) {
     super(name, settings)
 
-    this.layerEnabled = false
+    this.layerEnabled = this.settings.get('layer')
 
     this.initTab()
     this.initLayer()
@@ -77,16 +77,21 @@ export class UTurns extends WMEBase {
       styleContext: LAYER_STYLE.styleContext,
       zIndex: 500,
     })
-    this.wmeSDK.Map.setLayerVisibility({ layerName: LAYER_NAME, visibility: false })
+    this.wmeSDK.Map.setLayerVisibility({ layerName: LAYER_NAME, visibility: this.layerEnabled })
 
     this.wmeSDK.LayerSwitcher.addLayerCheckbox({ name: LAYER_NAME })
-    this.wmeSDK.LayerSwitcher.setLayerCheckboxChecked({ name: LAYER_NAME, isChecked: false })
+    this.wmeSDK.LayerSwitcher.setLayerCheckboxChecked({ name: LAYER_NAME, isChecked: this.layerEnabled })
+
+    if (this.layerEnabled) {
+      this.highlightDisallowed()
+    }
 
     this.wmeSDK.Events.on({
       eventName: 'wme-layer-checkbox-toggled',
       eventHandler: (e: any) => {
         if (e.name === LAYER_NAME) {
           this.layerEnabled = e.checked
+          this.settings.set('layer', e.checked)
           this.wmeSDK.Map.setLayerVisibility({ layerName: LAYER_NAME, visibility: e.checked })
           if (e.checked) {
             this.highlightDisallowed()
