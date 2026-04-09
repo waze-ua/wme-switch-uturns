@@ -2,7 +2,7 @@
 // @name         WME Switch Uturns
 // @name:uk      WME 🇺🇦 Switch Uturns
 // @name:ru      WME 🇺🇦 Switch Uturns
-// @version      2026.04.09.002
+// @version      2026.04.09.003
 // @description  Switches U-turns for a selected node or segment.
 // @description:uk Перемикач розворотів для обраної точки або сегменту.
 // @description:ru Переключатель разворотов для выбранной точки или сегмента.
@@ -86,7 +86,7 @@
     class UTurns extends WMEBase {
         constructor(name, settings = null) {
             super(name, settings);
-            this.layerEnabled = false;
+            this.layerEnabled = this.settings.get('layer');
             this.initTab();
             this.initLayer();
             this.initShortcuts();
@@ -112,14 +112,18 @@
                 styleContext: LAYER_STYLE.styleContext,
                 zIndex: 500,
             });
-            this.wmeSDK.Map.setLayerVisibility({ layerName: LAYER_NAME, visibility: false });
+            this.wmeSDK.Map.setLayerVisibility({ layerName: LAYER_NAME, visibility: this.layerEnabled });
             this.wmeSDK.LayerSwitcher.addLayerCheckbox({ name: LAYER_NAME });
-            this.wmeSDK.LayerSwitcher.setLayerCheckboxChecked({ name: LAYER_NAME, isChecked: false });
+            this.wmeSDK.LayerSwitcher.setLayerCheckboxChecked({ name: LAYER_NAME, isChecked: this.layerEnabled });
+            if (this.layerEnabled) {
+                this.highlightDisallowed();
+            }
             this.wmeSDK.Events.on({
                 eventName: 'wme-layer-checkbox-toggled',
                 eventHandler: (e) => {
                     if (e.name === LAYER_NAME) {
                         this.layerEnabled = e.checked;
+                        this.settings.set('layer', e.checked);
                         this.wmeSDK.Map.setLayerVisibility({ layerName: LAYER_NAME, visibility: e.checked });
                         if (e.checked) {
                             this.highlightDisallowed();
@@ -320,10 +324,13 @@
 
     var css_248z = "p.switch-u-turns-counter {\n  margin-top: 15px;\n  padding-left: 15px;\n}\np.switch-u-turns-info {\n  border-top: 1px solid #ccc;\n  color: #777;\n  font-size: x-small;\n  margin-top: 15px;\n  padding-top: 10px;\n  text-align: center;\n}\n\n#switch-u-turns {\n  padding: 16px;\n}\n\n#sidebar p.switch-u-turns-blue {\n  background-color: #0057B8;\n  color: white;\n  height: 32px;\n  text-align: center;\n  line-height: 32px;\n  font-size: 24px;\n  margin: 0;\n}\n\n#sidebar p.switch-u-turns-yellow {\n  background-color: #FFDD00;\n  color: black;\n  height: 32px;\n  text-align: center;\n  line-height: 32px;\n  font-size: 24px;\n  margin: 0;\n}\n";
 
+    const SETTINGS = {
+        layer: false,
+    };
     $(document).on('bootstrap.wme', () => {
         WMEUI.addTranslation(NAME, TRANSLATION);
         WMEUI.addStyle(css_248z);
-        new UTurns(NAME);
+        new UTurns(NAME, SETTINGS);
     });
 
 })();
