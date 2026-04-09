@@ -1,6 +1,3 @@
-// Script name, uses as unique index
-export const NAME = 'Switch U-turns'
-
 // Translations
 export const TRANSLATION = {
   'en': {

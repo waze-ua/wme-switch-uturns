@@ -5,8 +5,6 @@ interface WMENode {
   geometry: any
   id: number
 }
-
-
 // =============================================================================
 // WME-Base
 // =============================================================================
@@ -163,11 +161,6 @@ declare class Container {
   get(...keys: string[]): any
   has(...keys: string[]): boolean
 }
-
-declare class SimpleCache extends Container {
-  set(key: any, value?: any): void
-}
-
 declare class Settings extends Container {
   constructor(name: string, defaults?: any)
   uid: string

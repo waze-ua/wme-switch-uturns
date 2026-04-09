@@ -1,4 +1,5 @@
-import { NAME, TRANSLATION } from './translations'
+import { NAME } from './name'
+import { TRANSLATION } from './translations'
 import { UTurns } from './uturns'
 import css from './style.css'
 
