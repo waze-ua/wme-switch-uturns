@@ -17,6 +17,6 @@
 // @grant        none
 // @require      https://update.greasyfork.org/scripts/450160/1792042/WME-Bootstrap.js
 // @require      https://update.greasyfork.org/scripts/450221/1793261/WME-Base.js
-// @require      https://update.greasyfork.org/scripts/450320/1793862/WME-UI.js
+// @require      https://update.greasyfork.org/scripts/450320/1794414/WME-UI.js
 // ==/UserScript==
 
