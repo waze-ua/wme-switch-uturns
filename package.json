@@ -1,9 +1,12 @@
 {
   "name": "wme-switch-uturns",
-  "version": "2026.04.02.001",
+  "version": "2026.04.09.002",
   "scripts": {
     "build": "rollup -c",
     "watch": "rollup -c -w"
+  },
+  "optionalDependencies": {
+    "wme-sdk-typings": "https://web-assets.waze.com/wme_sdk_docs/production/latest/wme-sdk-typings.tgz"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^12.1.2",
