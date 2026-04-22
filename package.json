@@ -1,6 +1,6 @@
 {
   "name": "wme-switch-uturns",
-  "version": "2026.04.09.003",
+  "version": "2026.04.22.001",
   "scripts": {
     "build": "rollup -c",
     "watch": "rollup -c -w"
